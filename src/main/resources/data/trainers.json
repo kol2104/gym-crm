@@ -2,6 +2,8 @@
   {
     "firstName": "name",
     "lastName": "lastName",
+    "username": "name.lastName",
+    "password": "password",
     "active": "true",
     "specialization": [
       {
@@ -15,6 +17,8 @@
   {
     "firstName": "name2",
     "lastName": "lastName2",
+    "username": "name2.lastName2",
+    "password": "password2",
     "active": "false",
     "specialization": [
       {
