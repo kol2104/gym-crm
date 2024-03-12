@@ -1,0 +1,25 @@
+[
+  {
+    "firstName": "name",
+    "lastName": "lastName",
+    "active": "true",
+    "specialization": [
+      {
+        "name": "fitness"
+      },
+      {
+        "name": "running"
+      }
+    ]
+  },
+  {
+    "firstName": "name2",
+    "lastName": "lastName2",
+    "active": "false",
+    "specialization": [
+      {
+        "name": "running"
+      }
+    ]
+  }
+]

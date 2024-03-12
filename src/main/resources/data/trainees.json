@@ -1,0 +1,16 @@
+[
+  {
+    "firstName": "name",
+    "lastName": "lastName",
+    "active": "true",
+    "dateOfBirth": "1996-09-25",
+    "address": "Address Example 1"
+  },
+  {
+    "firstName": "name2",
+    "lastName": "lastName2",
+    "active": "false",
+    "dateOfBirth": "1987-11-15",
+    "address": "Address Example 2"
+  }
+]
