@@ -54,13 +54,6 @@ public class TrainerDaoCollection implements TrainerDao {
     @Override
     public Trainer save(Trainer trainer) {
         trainer.setId(nextId++);
-
-        String username = trainer.getFirstName() + "." + trainer.getLastName();
-        trainer.setUsername(username);
-        findByFirstNameAndLastName(trainer.getFirstName(), trainer.getLastName())
-                .ifPresent(t -> trainer.setUsername(username + trainer.getId()));
-
-        trainer.setPassword(PasswordUtil.getRandomPassword(10));
         trainers.put(trainer.getId(), trainer);
         log.info("Trainer saved successfully: {}", trainer);
         return trainer;

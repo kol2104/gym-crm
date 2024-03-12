@@ -4,6 +4,7 @@ import com.epam.gymcrm.dao.TraineeDao;
 import com.epam.gymcrm.exception.TraineeNotFoundException;
 import com.epam.gymcrm.model.Trainee;
 import com.epam.gymcrm.service.TraineeService;
+import com.epam.gymcrm.util.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Trainee save(Trainee trainee) {
         log.info("Saving trainee: {}", trainee);
+        String username = trainee.getFirstName() + "." + trainee.getLastName();
+        trainee.setUsername(username);
+        traineeDao.findByFirstNameAndLastName(trainee.getFirstName(), trainee.getLastName())
+                .ifPresent(t -> trainee.setUsername(username + trainee.getId()));
+
+        trainee.setPassword(PasswordUtil.getRandomPassword(10));
         return traineeDao.save(trainee);
     }
 

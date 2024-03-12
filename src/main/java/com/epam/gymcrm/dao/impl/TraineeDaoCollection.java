@@ -55,13 +55,6 @@ public class TraineeDaoCollection implements TraineeDao {
     @Override
     public Trainee save(Trainee trainee) {
         trainee.setId(nextId++);
-
-        String username = trainee.getFirstName() + "." + trainee.getLastName();
-        trainee.setUsername(username);
-        findByFirstNameAndLastName(trainee.getFirstName(), trainee.getLastName())
-                .ifPresent(t -> trainee.setUsername(username + trainee.getId()));
-
-        trainee.setPassword(PasswordUtil.getRandomPassword(10));
         trainees.put(trainee.getId(), trainee);
         log.info("Trainee saved successfully: {}", trainee);
         return trainee;

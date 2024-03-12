@@ -4,6 +4,7 @@ import com.epam.gymcrm.dao.TrainerDao;
 import com.epam.gymcrm.exception.TrainerNotFoundException;
 import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.service.TrainerService;
+import com.epam.gymcrm.util.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer save(Trainer trainer) {
         log.info("Saving trainer: {}", trainer);
+        String username = trainer.getFirstName() + "." + trainer.getLastName();
+        trainer.setUsername(username);
+        trainerDao.findByFirstNameAndLastName(trainer.getFirstName(), trainer.getLastName())
+                .ifPresent(t -> trainer.setUsername(username + trainer.getId()));
+
+        trainer.setPassword(PasswordUtil.getRandomPassword(10));
         return trainerDao.save(trainer);
     }
 
