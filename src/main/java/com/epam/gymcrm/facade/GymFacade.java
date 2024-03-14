@@ -24,28 +24,28 @@ public class GymFacade {
     }
 
     public List<Trainer> getTrainers() {
-        return trainerService.findAll();
+        return trainerService.getAll();
     }
 
     public List<Trainee> getTrainees() {
-        return traineeService.findAll();
+        return traineeService.getAll();
     }
 
     public List<Training> getTrainings() {
-        return trainingService.findAll();
+        return trainingService.getAll();
     }
 
 
-    public Trainee saveTrainee(Trainee trainee) {
-        return traineeService.save(trainee);
+    public Trainee createTrainee(Trainee trainee) {
+        return traineeService.create(trainee);
     }
 
-    public Trainer saveTrainer(Trainer trainer) {
-        return trainerService.save(trainer);
+    public Trainer createTrainer(Trainer trainer) {
+        return trainerService.create(trainer);
     }
 
-    public Training saveTraining(Training training) {
-        return trainingService.save(training);
+    public Training createTraining(Training training) {
+        return trainingService.create(training);
     }
 
     public void deleteTrainee(Long id) {
@@ -60,12 +60,12 @@ public class GymFacade {
         return trainerService.update(id, trainer);
     }
 
-    public Trainee findTraineeById(Long id) {
-        return traineeService.findById(id);
+    public Trainee getTraineeById(Long id) {
+        return traineeService.getById(id);
     }
 
-    public Trainer findTrainerById(Long id) {
-        return trainerService.findById(id);
+    public Trainer getTrainerById(Long id) {
+        return trainerService.getById(id);
     }
 
 }

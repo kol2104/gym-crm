@@ -45,90 +45,90 @@ class TrainingServiceImplTest {
     private TrainingServiceImpl trainingService;
 
     @Test
-    void testSaveTraining() {
+    void testCreateTraining() {
         // Given
         Training training = new Training();
-        when(traineeDao.findById(training.getTraineeId())).thenReturn(Optional.of(new Trainee()));
-        when(trainerDao.findById(training.getTrainerId())).thenReturn(Optional.of(new Trainer()));
-        when(trainingDao.save(training)).thenReturn(training);
+        when(traineeDao.getById(training.getTraineeId())).thenReturn(Optional.of(new Trainee()));
+        when(trainerDao.getById(training.getTrainerId())).thenReturn(Optional.of(new Trainer()));
+        when(trainingDao.create(training)).thenReturn(training);
 
         // When
-        Training savedTraining = trainingService.save(training);
+        Training createdTraining = trainingService.create(training);
 
         // Then
-        assertNotNull(savedTraining);
-        assertEquals(training, savedTraining);
-        verify(traineeDao, times(1)).findById(training.getTraineeId());
-        verify(trainerDao, times(1)).findById(training.getTrainerId());
-        verify(trainingDao, times(1)).save(training);
+        assertNotNull(createdTraining);
+        assertEquals(training, createdTraining);
+        verify(traineeDao, times(1)).getById(training.getTraineeId());
+        verify(trainerDao, times(1)).getById(training.getTrainerId());
+        verify(trainingDao, times(1)).create(training);
     }
 
     @Test
-    void testSaveTrainingTraineeNotFound() {
+    void testCreateTraining_TraineeNotFound() {
         // Given
         Training training = new Training();
-        when(traineeDao.findById(training.getTraineeId())).thenReturn(Optional.empty());
+        when(traineeDao.getById(training.getTraineeId())).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(TraineeNotFoundException.class, () -> trainingService.save(training));
-        verify(traineeDao, times(1)).findById(training.getTraineeId());
-        verify(trainerDao, never()).findById(any());
-        verify(trainingDao, never()).save(any());
+        assertThrows(TraineeNotFoundException.class, () -> trainingService.create(training));
+        verify(traineeDao, times(1)).getById(training.getTraineeId());
+        verify(trainerDao, never()).getById(any());
+        verify(trainingDao, never()).create(any());
     }
 
     @Test
-    void testSaveTrainingTrainerNotFound() {
+    void testCreateTraining_TrainerNotFound() {
         // Given
         Training training = new Training();
-        when(traineeDao.findById(training.getTraineeId())).thenReturn(Optional.of(new Trainee()));
-        when(trainerDao.findById(training.getTrainerId())).thenReturn(Optional.empty());
+        when(traineeDao.getById(training.getTraineeId())).thenReturn(Optional.of(new Trainee()));
+        when(trainerDao.getById(training.getTrainerId())).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(TrainerNotFoundException.class, () -> trainingService.save(training));
-        verify(traineeDao, times(1)).findById(training.getTraineeId());
-        verify(trainerDao, times(1)).findById(training.getTrainerId());
-        verify(trainingDao, never()).save(any());
+        assertThrows(TrainerNotFoundException.class, () -> trainingService.create(training));
+        verify(traineeDao, times(1)).getById(training.getTraineeId());
+        verify(trainerDao, times(1)).getById(training.getTrainerId());
+        verify(trainingDao, never()).create(any());
     }
 
     @Test
-    void testFindAllTrainings() {
+    void testGetAllTrainings() {
         // Given
         List<Training> trainingList = new ArrayList<>();
-        when(trainingDao.findAll()).thenReturn(trainingList);
+        when(trainingDao.getAll()).thenReturn(trainingList);
 
         // When
-        List<Training> foundTrainings = trainingService.findAll();
+        List<Training> foundTrainings = trainingService.getAll();
 
         // Then
         assertNotNull(foundTrainings);
         assertEquals(trainingList, foundTrainings);
-        verify(trainingDao, times(1)).findAll();
+        verify(trainingDao, times(1)).getAll();
     }
 
     @Test
-    void testFindTrainingById() {
+    void testGetTrainingById() {
         // Given
         long trainingId = 1L;
         Training training = new Training();
-        when(trainingDao.findById(trainingId)).thenReturn(Optional.of(training));
+        when(trainingDao.getById(trainingId)).thenReturn(Optional.of(training));
 
         // When
-        Training foundTraining = trainingService.findById(trainingId);
+        Training foundTraining = trainingService.getById(trainingId);
 
         // Then
         assertNotNull(foundTraining);
         assertEquals(training, foundTraining);
-        verify(trainingDao, times(1)).findById(trainingId);
+        verify(trainingDao, times(1)).getById(trainingId);
     }
 
     @Test
-    void testFindTrainingByIdNotFound() {
+    void testGetTrainingByIdNotFound() {
         // Given
         long trainingId = 1L;
-        when(trainingDao.findById(trainingId)).thenReturn(Optional.empty());
+        when(trainingDao.getById(trainingId)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(TrainingNotFoundException.class, () -> trainingService.findById(trainingId));
-        verify(trainingDao, times(1)).findById(trainingId);
+        assertThrows(TrainingNotFoundException.class, () -> trainingService.getById(trainingId));
+        verify(trainingDao, times(1)).getById(trainingId);
     }
 }

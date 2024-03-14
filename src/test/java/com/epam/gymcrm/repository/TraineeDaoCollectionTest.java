@@ -2,11 +2,9 @@ package com.epam.gymcrm.repository;
 
 import com.epam.gymcrm.dao.impl.TraineeDaoCollection;
 import com.epam.gymcrm.model.Trainee;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -23,7 +21,7 @@ class TraineeDaoCollectionTest {
     private TraineeDaoCollection traineeDaoCollection;
 
     @Test
-    void testSave() throws Exception {
+    void testCreate() throws Exception {
         // Given
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");
@@ -33,46 +31,46 @@ class TraineeDaoCollectionTest {
         trainee.setActive(true);
 
         // When
-        Trainee savedTrainee = traineeDaoCollection.save(trainee);
+        Trainee createdTrainee = traineeDaoCollection.create(trainee);
 
         // Then
-        assertNotNull(savedTrainee.getId());
-        assertEquals(trainee.getUsername(), savedTrainee.getUsername());
-        assertEquals(trainee.getFirstName(), savedTrainee.getFirstName());
-        assertEquals(trainee.getLastName(), savedTrainee.getLastName());
-        assertEquals(trainee.getPassword(), savedTrainee.getPassword());
-        assertTrue(savedTrainee.isActive());
+        assertNotNull(createdTrainee.getId());
+        assertEquals(trainee.getUsername(), createdTrainee.getUsername());
+        assertEquals(trainee.getFirstName(), createdTrainee.getFirstName());
+        assertEquals(trainee.getLastName(), createdTrainee.getLastName());
+        assertEquals(trainee.getPassword(), createdTrainee.getPassword());
+        assertTrue(createdTrainee.isActive());
     }
 
     @Test
-    void testFindAll() {
+    void testGetAll() {
         // When
-        List<Trainee> allTrainees = traineeDaoCollection.findAll();
+        List<Trainee> allTrainees = traineeDaoCollection.getAll();
 
         // Then
         assertEquals(0, allTrainees.size());
     }
 
     @Test
-    void testFindById() {
+    void testGetById() {
         // Given
         Trainee trainee = new Trainee();
         trainee.setId(1L);
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
-        traineeDaoCollection.save(trainee);
+        traineeDaoCollection.create(trainee);
 
         // When
-        Optional<Trainee> foundTrainee = traineeDaoCollection.findById(1L);
+        Optional<Trainee> foundTrainee = traineeDaoCollection.getById(1L);
 
         // Then
         assertEquals(trainee, foundTrainee.orElse(null));
     }
 
     @Test
-    void testFindById_NonExistentTrainee() {
+    void testGetById_NonExistentTrainee() {
         // When
-        Optional<Trainee> trainee = traineeDaoCollection.findById(99L);
+        Optional<Trainee> trainee = traineeDaoCollection.getById(99L);
 
         // Then
         assertTrue(trainee.isEmpty());
@@ -85,7 +83,7 @@ class TraineeDaoCollectionTest {
         trainee.setId(1L);
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
-        traineeDaoCollection.save(trainee);
+        traineeDaoCollection.create(trainee);
 
         Trainee updatedTrainee = new Trainee();
         updatedTrainee.setId(1L);
@@ -121,35 +119,35 @@ class TraineeDaoCollectionTest {
         trainee.setId(1L);
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
-        traineeDaoCollection.save(trainee);
+        traineeDaoCollection.create(trainee);
 
         // When
         traineeDaoCollection.delete(1L);
 
         // Then
-        assertEquals(0, traineeDaoCollection.findAll().size());
+        assertEquals(0, traineeDaoCollection.getAll().size());
     }
 
     @Test
-    void testFindByFirstNameAndLastName() {
+    void testGetByFirstNameAndLastName() {
         // Given
         Trainee trainee = new Trainee();
         trainee.setId(1L);
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
-        traineeDaoCollection.save(trainee);
+        traineeDaoCollection.create(trainee);
 
         // When
-        Optional<Trainee> foundTrainee = traineeDaoCollection.findByFirstNameAndLastName("John", "Doe");
+        Optional<Trainee> foundTrainee = traineeDaoCollection.getByFirstNameAndLastName("John", "Doe");
 
         // Then
         assertEquals(trainee, foundTrainee.orElse(null));
     }
 
     @Test
-    void testFindByFirstNameAndLastName_NonExistentTrainee() {
+    void testGetByFirstNameAndLastName_NonExistentTrainee() {
         // When
-        Optional<Trainee> trainee = traineeDaoCollection.findByFirstNameAndLastName("Jane", "Smith");
+        Optional<Trainee> trainee = traineeDaoCollection.getByFirstNameAndLastName("Jane", "Smith");
 
         // Then
         assertTrue(trainee.isEmpty());

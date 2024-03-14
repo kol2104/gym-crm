@@ -3,7 +3,6 @@ package com.epam.gymcrm.dao.impl;
 import com.epam.gymcrm.config.property.YamlPropertySourceFactory;
 import com.epam.gymcrm.dao.TrainerDao;
 import com.epam.gymcrm.model.Trainer;
-import com.epam.gymcrm.util.PasswordUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -44,7 +43,7 @@ public class TrainerDaoCollection implements TrainerDao {
         try {
             File jsonFile = ResourceUtils.getFile("classpath:" + dataJsonFilePath);
             List<Trainer> preparedData = objectMapper.readValue(jsonFile, new TypeReference<List<Trainer>>() {});
-            preparedData.forEach(this::save);
+            preparedData.forEach(this::create);
             log.info("Initialization of TrainerDaoCollection completed successfully.");
         } catch (IOException e) {
             log.error("Error occurred during initialization of TrainerDaoCollection: {}", e.getMessage());
@@ -52,22 +51,22 @@ public class TrainerDaoCollection implements TrainerDao {
     }
 
     @Override
-    public Trainer save(Trainer trainer) {
+    public Trainer create(Trainer trainer) {
         trainer.setId(nextId++);
         trainers.put(trainer.getId(), trainer);
-        log.info("Trainer saved successfully: {}", trainer);
+        log.info("Trainer created successfully: {}", trainer);
         return trainer;
     }
 
     @Override
-    public List<Trainer> findAll() {
+    public List<Trainer> getAll() {
         List<Trainer> allTrainers = new ArrayList<>(trainers.values());
         log.debug("Found {} trainers.", allTrainers.size());
         return allTrainers;
     }
 
     @Override
-    public Optional<Trainer> findById(Long id) {
+    public Optional<Trainer> getById(Long id) {
         Trainer trainer = trainers.get(id);
         if (trainer != null) {
             log.debug("Found trainer by id {}: {}", id, trainer);
@@ -90,7 +89,7 @@ public class TrainerDaoCollection implements TrainerDao {
     }
 
     @Override
-    public Optional<Trainer> findByFirstNameAndLastName(String firstName, String lastName) {
+    public Optional<Trainer> getByFirstNameAndLastName(String firstName, String lastName) {
         Optional<Trainer> foundTrainer = trainers.values().stream()
                 .filter(trainer -> trainer.getFirstName().equals(firstName) && trainer.getLastName().equals(lastName))
                 .findFirst();

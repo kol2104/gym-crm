@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TrainingDao {
-    Training save(Training t);
-    List<Training> findAll();
-    Optional<Training> findById(Long id);
+    Training create(Training t);
+    List<Training> getAll();
+    Optional<Training> getById(Long id);
 }

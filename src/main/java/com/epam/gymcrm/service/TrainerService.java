@@ -5,8 +5,8 @@ import com.epam.gymcrm.model.Trainer;
 import java.util.List;
 
 public interface TrainerService {
-    Trainer save(Trainer trainer);
-    List<Trainer> findAll();
-    Trainer findById(Long id);
+    Trainer create(Trainer trainer);
+    List<Trainer> getAll();
+    Trainer getById(Long id);
     Trainer update(Long id, Trainer trainer);
 }

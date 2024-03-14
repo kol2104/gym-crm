@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TrainerDao {
-    Trainer save(Trainer t);
-    List<Trainer> findAll();
-    Optional<Trainer> findById(Long id);
+    Trainer create(Trainer t);
+    List<Trainer> getAll();
+    Optional<Trainer> getById(Long id);
     Trainer update(Trainer t);
-    Optional<Trainer> findByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Trainer> getByFirstNameAndLastName(String firstName, String lastName);
 }

@@ -3,7 +3,6 @@ package com.epam.gymcrm.dao.impl;
 import com.epam.gymcrm.config.property.YamlPropertySourceFactory;
 import com.epam.gymcrm.dao.TraineeDao;
 import com.epam.gymcrm.model.Trainee;
-import com.epam.gymcrm.util.PasswordUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -46,29 +45,29 @@ public class TraineeDaoCollection implements TraineeDao {
             File jsonFile = ResourceUtils.getFile("classpath:" + dataJsonFilePath);
 
             List<Trainee> preparedData = objectMapper.readValue(jsonFile, new TypeReference<List<Trainee>>() {});
-            preparedData.forEach(this::save);
+            preparedData.forEach(this::create);
             log.info("Initialization of TraineeDaoCollection completed successfully.");
         } catch (IOException e) {
             log.error("Error occurred during initialization of TraineeDaoCollection: {}", e.getMessage());
         }
     }
     @Override
-    public Trainee save(Trainee trainee) {
+    public Trainee create(Trainee trainee) {
         trainee.setId(nextId++);
         trainees.put(trainee.getId(), trainee);
-        log.info("Trainee saved successfully: {}", trainee);
+        log.info("Trainee created successfully: {}", trainee);
         return trainee;
     }
 
     @Override
-    public List<Trainee> findAll() {
+    public List<Trainee> getAll() {
         List<Trainee> allTrainees = new ArrayList<>(trainees.values());
         log.debug("Found {} trainees.", allTrainees.size());
         return allTrainees;
     }
 
     @Override
-    public Optional<Trainee> findById(Long id) {
+    public Optional<Trainee> getById(Long id) {
         Trainee trainee = trainees.get(id);
         if (trainee != null) {
             log.debug("Found trainee by id {}: {}", id, trainee);
@@ -101,7 +100,7 @@ public class TraineeDaoCollection implements TraineeDao {
     }
 
     @Override
-    public Optional<Trainee> findByFirstNameAndLastName(String firstName, String lastName) {
+    public Optional<Trainee> getByFirstNameAndLastName(String firstName, String lastName) {
         Optional<Trainee> foundTrainee = trainees.values().stream()
                 .filter(trainee -> trainee.getFirstName().equals(firstName) && trainee.getLastName().equals(lastName))
                 .findFirst();

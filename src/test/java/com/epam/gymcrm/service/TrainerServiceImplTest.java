@@ -32,60 +32,60 @@ class TrainerServiceImplTest {
     private TrainerServiceImpl trainerService;
 
     @Test
-    void testSaveTrainer() {
+    void testCreateTrainer() {
         // Given
         Trainer trainer = new Trainer();
-        when(trainerDao.save(trainer)).thenReturn(trainer);
+        when(trainerDao.create(trainer)).thenReturn(trainer);
 
         // When
-        Trainer savedTrainer = trainerService.save(trainer);
+        Trainer createdTrainer = trainerService.create(trainer);
 
         // Then
-        assertNotNull(savedTrainer);
-        assertEquals(trainer, savedTrainer);
-        verify(trainerDao, times(1)).save(trainer);
+        assertNotNull(createdTrainer);
+        assertEquals(trainer, createdTrainer);
+        verify(trainerDao, times(1)).create(trainer);
     }
 
     @Test
-    void testFindAllTrainers() {
+    void testGetAllTrainers() {
         // Given
         List<Trainer> trainerList = new ArrayList<>();
-        when(trainerDao.findAll()).thenReturn(trainerList);
+        when(trainerDao.getAll()).thenReturn(trainerList);
 
         // When
-        List<Trainer> foundTrainers = trainerService.findAll();
+        List<Trainer> foundTrainers = trainerService.getAll();
 
         // Then
         assertNotNull(foundTrainers);
         assertEquals(trainerList, foundTrainers);
-        verify(trainerDao, times(1)).findAll();
+        verify(trainerDao, times(1)).getAll();
     }
 
     @Test
-    void testFindTrainerById() {
+    void testGetTrainerById() {
         // Given
         long trainerId = 1L;
         Trainer trainer = new Trainer();
-        when(trainerDao.findById(trainerId)).thenReturn(Optional.of(trainer));
+        when(trainerDao.getById(trainerId)).thenReturn(Optional.of(trainer));
 
         // When
-        Trainer foundTrainer = trainerService.findById(trainerId);
+        Trainer foundTrainer = trainerService.getById(trainerId);
 
         // Then
         assertNotNull(foundTrainer);
         assertEquals(trainer, foundTrainer);
-        verify(trainerDao, times(1)).findById(trainerId);
+        verify(trainerDao, times(1)).getById(trainerId);
     }
 
     @Test
-    void testFindTrainerByIdNotFound() {
+    void testGetTrainerByIdNotFound() {
         // Given
         long trainerId = 1L;
-        when(trainerDao.findById(trainerId)).thenReturn(Optional.empty());
+        when(trainerDao.getById(trainerId)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(TrainerNotFoundException.class, () -> trainerService.findById(trainerId));
-        verify(trainerDao, times(1)).findById(trainerId);
+        assertThrows(TrainerNotFoundException.class, () -> trainerService.getById(trainerId));
+        verify(trainerDao, times(1)).getById(trainerId);
     }
 
     @Test
@@ -93,7 +93,7 @@ class TrainerServiceImplTest {
         // Given
         long trainerId = 1L;
         Trainer trainer = new Trainer();
-        when(trainerDao.findById(trainerId)).thenReturn(Optional.of(trainer));
+        when(trainerDao.getById(trainerId)).thenReturn(Optional.of(trainer));
         when(trainerDao.update(trainer)).thenReturn(trainer);
 
         // When
@@ -102,7 +102,7 @@ class TrainerServiceImplTest {
         // Then
         assertNotNull(updatedTrainer);
         assertEquals(trainer, updatedTrainer);
-        verify(trainerDao, times(1)).findById(trainerId);
+        verify(trainerDao, times(1)).getById(trainerId);
         verify(trainerDao, times(1)).update(trainer);
     }
 
@@ -111,11 +111,11 @@ class TrainerServiceImplTest {
         // Given
         long trainerId = 1L;
         Trainer trainer = new Trainer();
-        when(trainerDao.findById(trainerId)).thenReturn(Optional.empty());
+        when(trainerDao.getById(trainerId)).thenReturn(Optional.empty());
 
         // When/Then
         assertThrows(TrainerNotFoundException.class, () -> trainerService.update(trainerId, trainer));
-        verify(trainerDao, times(1)).findById(trainerId);
+        verify(trainerDao, times(1)).getById(trainerId);
         verify(trainerDao, never()).update(trainer);
     }
 }

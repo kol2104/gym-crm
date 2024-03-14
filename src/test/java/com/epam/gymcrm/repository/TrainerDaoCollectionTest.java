@@ -23,7 +23,7 @@ class TrainerDaoCollectionTest {
     private TrainerDaoCollection trainerDaoCollection;
 
     @Test
-    void testSave() throws IOException {
+    void testCreate() throws IOException {
 
         // Given
         Trainer trainer = new Trainer();
@@ -34,15 +34,15 @@ class TrainerDaoCollectionTest {
         trainer.setActive(true);
 
         // When
-        Trainer savedTrainer = trainerDaoCollection.save(trainer);
+        Trainer createdTrainer = trainerDaoCollection.create(trainer);
 
         // Then
-        assertNotNull(savedTrainer.getId());
-        assertEquals(trainer.getUsername(), savedTrainer.getUsername());
-        assertEquals(trainer.getFirstName(), savedTrainer.getFirstName());
-        assertEquals(trainer.getLastName(), savedTrainer.getLastName());
-        assertEquals(trainer.getPassword(), savedTrainer.getPassword());
-        assertTrue(savedTrainer.isActive());
+        assertNotNull(createdTrainer.getId());
+        assertEquals(trainer.getUsername(), createdTrainer.getUsername());
+        assertEquals(trainer.getFirstName(), createdTrainer.getFirstName());
+        assertEquals(trainer.getLastName(), createdTrainer.getLastName());
+        assertEquals(trainer.getPassword(), createdTrainer.getPassword());
+        assertTrue(createdTrainer.isActive());
     }
 
     @Test
@@ -61,18 +61,18 @@ class TrainerDaoCollectionTest {
     }
 
     @Test
-    void testFindById_NonExistentTrainer() {
+    void testGetById_NonExistentTrainer() {
         // When
-        Optional<Trainer> trainer = trainerDaoCollection.findById(99L);
+        Optional<Trainer> trainer = trainerDaoCollection.getById(99L);
 
         // Then
         assertTrue(trainer.isEmpty());
     }
 
     @Test
-    void testFindByFirstNameAndLastName_NonExistentTrainer() {
+    void testGetByFirstNameAndLastName_NonExistentTrainer() {
         // When
-        Optional<Trainer> trainer = trainerDaoCollection.findByFirstNameAndLastName("Jane", "Smith");
+        Optional<Trainer> trainer = trainerDaoCollection.getByFirstNameAndLastName("Jane", "Smith");
 
         // Then
         assertTrue(trainer.isEmpty());
@@ -85,7 +85,7 @@ class TrainerDaoCollectionTest {
         existingTrainer.setId(1L);
         existingTrainer.setFirstName("John");
         existingTrainer.setLastName("Doe");
-        trainerDaoCollection.save(existingTrainer);
+        trainerDaoCollection.create(existingTrainer);
 
         // When
         existingTrainer.setFirstName("Jane");
@@ -97,16 +97,16 @@ class TrainerDaoCollectionTest {
     }
 
     @Test
-    void testFindById_ExistentTrainer() {
+    void testGetById_ExistentTrainer() {
         // Given
         Trainer existingTrainer = new Trainer();
         existingTrainer.setId(1L);
         existingTrainer.setFirstName("John");
         existingTrainer.setLastName("Doe");
-        trainerDaoCollection.save(existingTrainer);
+        trainerDaoCollection.create(existingTrainer);
 
         // When
-        Optional<Trainer> foundTrainer = trainerDaoCollection.findById(1L);
+        Optional<Trainer> foundTrainer = trainerDaoCollection.getById(1L);
 
         // Then
         assertTrue(foundTrainer.isPresent());
@@ -114,16 +114,16 @@ class TrainerDaoCollectionTest {
     }
 
     @Test
-    void testFindByFirstNameAndLastName_ExistentTrainer() {
+    void testGetByFirstNameAndLastName_ExistentTrainer() {
         // Given
         Trainer existingTrainer = new Trainer();
         existingTrainer.setId(1L);
         existingTrainer.setFirstName("John");
         existingTrainer.setLastName("Doe");
-        trainerDaoCollection.save(existingTrainer);
+        trainerDaoCollection.create(existingTrainer);
 
         // When
-        Optional<Trainer> foundTrainer = trainerDaoCollection.findByFirstNameAndLastName("John", "Doe");
+        Optional<Trainer> foundTrainer = trainerDaoCollection.getByFirstNameAndLastName("John", "Doe");
 
         // Then
         assertTrue(foundTrainer.isPresent());

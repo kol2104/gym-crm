@@ -18,27 +18,27 @@ public class TrainerServiceImpl implements TrainerService {
     private TrainerDao trainerDao;
 
     @Override
-    public Trainer save(Trainer trainer) {
+    public Trainer create(Trainer trainer) {
         log.info("Saving trainer: {}", trainer);
         String username = trainer.getFirstName() + "." + trainer.getLastName();
         trainer.setUsername(username);
-        trainerDao.findByFirstNameAndLastName(trainer.getFirstName(), trainer.getLastName())
+        trainerDao.getByFirstNameAndLastName(trainer.getFirstName(), trainer.getLastName())
                 .ifPresent(t -> trainer.setUsername(username + trainer.getId()));
 
         trainer.setPassword(PasswordUtil.getRandomPassword(10));
-        return trainerDao.save(trainer);
+        return trainerDao.create(trainer);
     }
 
     @Override
-    public List<Trainer> findAll() {
+    public List<Trainer> getAll() {
         log.info("Retrieving all trainers.");
-        return trainerDao.findAll();
+        return trainerDao.getAll();
     }
 
     @Override
-    public Trainer findById(Long id) {
+    public Trainer getById(Long id) {
         log.info("Finding trainer by id: {}", id);
-        return trainerDao.findById(id)
+        return trainerDao.getById(id)
                 .orElseThrow(() -> {
                     log.error("Trainer with id {} not found.", id);
                     return new TrainerNotFoundException(id);
@@ -48,7 +48,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer update(Long id, Trainer trainer) {
         log.info("Updating trainer with id {}: {}", id, trainer);
-        if (trainerDao.findById(id).isEmpty()) {
+        if (trainerDao.getById(id).isEmpty()) {
             log.error("Trainer with id {} not found.", id);
             throw new TrainerNotFoundException(id);
         }

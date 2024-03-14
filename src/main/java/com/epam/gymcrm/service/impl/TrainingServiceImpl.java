@@ -25,29 +25,29 @@ public class TrainingServiceImpl implements TrainingService {
     private TraineeDao traineeDao;
 
     @Override
-    public Training save(Training training) {
-        if (traineeDao.findById(training.getTraineeId()).isEmpty()) {
+    public Training create(Training training) {
+        if (traineeDao.getById(training.getTraineeId()).isEmpty()) {
             log.error("Trainee with id {} not found.", training.getTraineeId());
             throw new TraineeNotFoundException(training.getTraineeId());
         }
-        if (trainerDao.findById(training.getTrainerId()).isEmpty()) {
+        if (trainerDao.getById(training.getTrainerId()).isEmpty()) {
             log.error("Trainer with id {} not found.", training.getTrainerId());
             throw new TrainerNotFoundException(training.getTrainerId());
         }
         log.info("Saving training: {}", training);
-        return trainingDao.save(training);
+        return trainingDao.create(training);
     }
 
     @Override
-    public List<Training> findAll() {
+    public List<Training> getAll() {
         log.info("Retrieving all trainings.");
-        return trainingDao.findAll();
+        return trainingDao.getAll();
     }
 
     @Override
-    public Training findById(Long id) {
+    public Training getById(Long id) {
         log.info("Finding training by id: {}", id);
-        return trainingDao.findById(id)
+        return trainingDao.getById(id)
                 .orElseThrow(() -> {
                     log.error("Training with id {} not found.", id);
                     return new TrainingNotFoundException(id);

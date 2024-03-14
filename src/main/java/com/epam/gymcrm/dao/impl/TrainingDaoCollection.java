@@ -45,29 +45,29 @@ public class TrainingDaoCollection implements TrainingDao {
             File jsonFile = ResourceUtils.getFile("classpath:" + dataJsonFilePath);
 
             List<Training> preparedData = objectMapper.readValue(jsonFile, new TypeReference<List<Training>>() {});
-            preparedData.forEach(this::save);
+            preparedData.forEach(this::create);
             log.info("Initialization of TrainingDaoCollection completed successfully.");
         } catch (IOException e) {
             log.error("Error occurred during initialization of TrainingDaoCollection: {}", e.getMessage());
         }
     }
     @Override
-    public Training save(Training training) {
+    public Training create(Training training) {
         training.setId(nextId++);
         trainings.put(training.getId(), training);
-        log.info("Training saved successfully: {}", training);
+        log.info("Training created successfully: {}", training);
         return training;
     }
 
     @Override
-    public List<Training> findAll() {
+    public List<Training> getAll() {
         List<Training> allTrainings = new ArrayList<>(trainings.values());
         log.debug("Found {} trainings.", allTrainings.size());
         return allTrainings;
     }
 
     @Override
-    public Optional<Training> findById(Long id) {
+    public Optional<Training> getById(Long id) {
         Training training = trainings.get(id);
         if (training != null) {
             log.debug("Found training by id {}: {}", id, training);

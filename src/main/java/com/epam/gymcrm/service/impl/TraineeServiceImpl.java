@@ -18,27 +18,27 @@ public class TraineeServiceImpl implements TraineeService {
     private TraineeDao traineeDao;
 
     @Override
-    public Trainee save(Trainee trainee) {
+    public Trainee create(Trainee trainee) {
         log.info("Saving trainee: {}", trainee);
         String username = trainee.getFirstName() + "." + trainee.getLastName();
         trainee.setUsername(username);
-        traineeDao.findByFirstNameAndLastName(trainee.getFirstName(), trainee.getLastName())
+        traineeDao.getByFirstNameAndLastName(trainee.getFirstName(), trainee.getLastName())
                 .ifPresent(t -> trainee.setUsername(username + trainee.getId()));
 
         trainee.setPassword(PasswordUtil.getRandomPassword(10));
-        return traineeDao.save(trainee);
+        return traineeDao.create(trainee);
     }
 
     @Override
-    public List<Trainee> findAll() {
+    public List<Trainee> getAll() {
         log.info("Retrieving active trainees.");
-        return traineeDao.findAll();
+        return traineeDao.getAll();
     }
 
     @Override
-    public Trainee findById(Long id) {
+    public Trainee getById(Long id) {
         log.info("Finding trainee by id: {}", id);
-        return traineeDao.findById(id)
+        return traineeDao.getById(id)
                 .orElseThrow(() -> {
                     log.error("Trainee with id {} not found.", id);
                     return new TraineeNotFoundException(id);
@@ -54,7 +54,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Trainee update(Long id, Trainee trainee) {
         log.info("Updating trainee with id {}: {}", id, trainee);
-        if (traineeDao.findById(id).isEmpty()) {
+        if (traineeDao.getById(id).isEmpty()) {
             log.error("Trainee with id {} not found.", id);
             throw new TraineeNotFoundException(id);
         }

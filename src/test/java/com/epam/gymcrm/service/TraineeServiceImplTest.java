@@ -33,61 +33,61 @@ class TraineeServiceImplTest {
     private TraineeServiceImpl traineeService;
 
     @Test
-    void testSaveTrainee() {
+    void testCreateTrainee() {
         // Given
         Trainee trainee = new Trainee();
-        when(traineeDao.save(trainee)).thenReturn(trainee);
+        when(traineeDao.create(trainee)).thenReturn(trainee);
 
         // When
-        Trainee savedTrainee = traineeService.save(trainee);
+        Trainee createdTrainee = traineeService.create(trainee);
 
         // Then
-        assertNotNull(savedTrainee);
-        assertEquals(trainee, savedTrainee);
-        verify(traineeDao, times(1)).save(trainee);
+        assertNotNull(createdTrainee);
+        assertEquals(trainee, createdTrainee);
+        verify(traineeDao, times(1)).create(trainee);
     }
 
     @Test
-    void testFindAllTrainees() {
+    void testGetAllTrainees() {
         // Given
         List<Trainee> expectedTrainees = Arrays.asList(new Trainee(), new Trainee());
-        when(traineeDao.findAll()).thenReturn(expectedTrainees);
+        when(traineeDao.getAll()).thenReturn(expectedTrainees);
 
         // When
-        List<Trainee> actualTrainees = traineeService.findAll();
+        List<Trainee> actualTrainees = traineeService.getAll();
 
         // Then
         assertNotNull(actualTrainees);
         assertEquals(expectedTrainees.size(), actualTrainees.size());
         assertTrue(actualTrainees.containsAll(expectedTrainees));
-        verify(traineeDao, times(1)).findAll();
+        verify(traineeDao, times(1)).getAll();
     }
 
     @Test
-    void testFindByIdTraineeFound() {
+    void testGetByIdTraineeFound() {
         // Given
         long traineeId = 1L;
         Trainee trainee = new Trainee();
-        when(traineeDao.findById(traineeId)).thenReturn(Optional.of(trainee));
+        when(traineeDao.getById(traineeId)).thenReturn(Optional.of(trainee));
 
         // When
-        Trainee foundTrainee = traineeService.findById(traineeId);
+        Trainee foundTrainee = traineeService.getById(traineeId);
 
         // Then
         assertNotNull(foundTrainee);
         assertEquals(trainee, foundTrainee);
-        verify(traineeDao, times(1)).findById(traineeId);
+        verify(traineeDao, times(1)).getById(traineeId);
     }
 
     @Test
-    void testFindByIdTraineeNotFound() {
+    void testGetByIdTraineeNotFound() {
         // Given
         long traineeId = 1L;
-        when(traineeDao.findById(traineeId)).thenReturn(Optional.empty());
+        when(traineeDao.getById(traineeId)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.findById(traineeId));
-        verify(traineeDao, times(1)).findById(traineeId);
+        assertThrows(TraineeNotFoundException.class, () -> traineeService.getById(traineeId));
+        verify(traineeDao, times(1)).getById(traineeId);
     }
 
     @Test
@@ -108,7 +108,7 @@ class TraineeServiceImplTest {
         long traineeId = 1L;
         Trainee trainee = new Trainee();
         trainee.setId(traineeId);
-        when(traineeDao.findById(traineeId)).thenReturn(Optional.of(trainee));
+        when(traineeDao.getById(traineeId)).thenReturn(Optional.of(trainee));
         when(traineeDao.update(trainee)).thenReturn(trainee);
 
         // When
@@ -117,7 +117,7 @@ class TraineeServiceImplTest {
         // Then
         assertNotNull(updatedTrainee);
         assertEquals(trainee, updatedTrainee);
-        verify(traineeDao, times(1)).findById(traineeId);
+        verify(traineeDao, times(1)).getById(traineeId);
         verify(traineeDao, times(1)).update(trainee);
     }
 
@@ -126,11 +126,11 @@ class TraineeServiceImplTest {
         // Given
         long traineeId = 1L;
         Trainee trainee = new Trainee();
-        when(traineeDao.findById(traineeId)).thenReturn(Optional.empty());
+        when(traineeDao.getById(traineeId)).thenReturn(Optional.empty());
 
         // When/Then
         assertThrows(TraineeNotFoundException.class, () -> traineeService.update(traineeId, trainee));
-        verify(traineeDao, times(1)).findById(traineeId);
+        verify(traineeDao, times(1)).getById(traineeId);
         verify(traineeDao, never()).update(trainee);
     }
 }

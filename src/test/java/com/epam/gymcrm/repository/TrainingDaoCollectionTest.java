@@ -1,6 +1,5 @@
 package com.epam.gymcrm.repository;
 
-import com.epam.gymcrm.dao.impl.TrainerDaoCollection;
 import com.epam.gymcrm.dao.impl.TrainingDaoCollection;
 import com.epam.gymcrm.model.Training;
 import org.junit.jupiter.api.Test;
@@ -22,31 +21,31 @@ class TrainingDaoCollectionTest {
     private TrainingDaoCollection trainingDaoCollection;
 
     @Test
-    void testSave() {
+    void testCreate() {
         // Given
         Training trainingToSave = new Training();
         trainingToSave.setTrainingName("Running");
 
         // When
-        Training savedTraining = trainingDaoCollection.save(trainingToSave);
+        Training createdTraining = trainingDaoCollection.create(trainingToSave);
 
         // Then
-        assertNotNull(savedTraining.getId());
-        assertEquals("Running", savedTraining.getTrainingName());
+        assertNotNull(createdTraining.getId());
+        assertEquals("Running", createdTraining.getTrainingName());
     }
 
     @Test
-    void testFindAll() {
+    void testGetAll() {
         // Given
         Training training1 = new Training();
         training1.setTrainingName("Running");
         Training training2 = new Training();
         training2.setTrainingName("Swimming");
-        trainingDaoCollection.save(training1);
-        trainingDaoCollection.save(training2);
+        trainingDaoCollection.create(training1);
+        trainingDaoCollection.create(training2);
 
         // When
-        List<Training> allTrainings = trainingDaoCollection.findAll();
+        List<Training> allTrainings = trainingDaoCollection.getAll();
 
         // Then
         assertEquals(2, allTrainings.size());
@@ -55,15 +54,15 @@ class TrainingDaoCollectionTest {
     }
 
     @Test
-    void testFindById_ExistentTraining() {
+    void testGetById_ExistentTraining() {
         // Given
         Training existingTraining = new Training();
         existingTraining.setId(1L);
         existingTraining.setTrainingName("Running");
-        trainingDaoCollection.save(existingTraining);
+        trainingDaoCollection.create(existingTraining);
 
         // When
-        Optional<Training> foundTraining = trainingDaoCollection.findById(1L);
+        Optional<Training> foundTraining = trainingDaoCollection.getById(1L);
 
         // Then
         assertTrue(foundTraining.isPresent());
@@ -71,9 +70,9 @@ class TrainingDaoCollectionTest {
     }
 
     @Test
-    void testFindById_TrainingNotFound() {
+    void testGetById_TrainingNotFound() {
         // When
-        Optional<Training> trainingOptional = trainingDaoCollection.findById(999L);
+        Optional<Training> trainingOptional = trainingDaoCollection.getById(999L);
 
         // Then
         assertTrue(trainingOptional.isEmpty());
