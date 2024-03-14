@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,12 +28,20 @@ class TraineeDaoCollectionTest {
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");
         trainee.setLastName("Doe");
+        trainee.setUsername("John.Doe");
+        trainee.setPassword("password");
+        trainee.setActive(true);
 
         // When
         Trainee savedTrainee = traineeDaoCollection.save(trainee);
 
         // Then
-        assertEquals("John.Doe", savedTrainee.getUsername());
+        assertNotNull(savedTrainee.getId());
+        assertEquals(trainee.getUsername(), savedTrainee.getUsername());
+        assertEquals(trainee.getFirstName(), savedTrainee.getFirstName());
+        assertEquals(trainee.getLastName(), savedTrainee.getLastName());
+        assertEquals(trainee.getPassword(), savedTrainee.getPassword());
+        assertTrue(savedTrainee.isActive());
     }
 
     @Test

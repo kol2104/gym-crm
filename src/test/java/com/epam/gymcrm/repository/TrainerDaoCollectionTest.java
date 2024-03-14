@@ -23,23 +23,26 @@ class TrainerDaoCollectionTest {
     private TrainerDaoCollection trainerDaoCollection;
 
     @Test
-    void testSave_WithExistingTrainer() throws IOException {
-        // Given
-        Trainer existingTrainer = new Trainer();
-        existingTrainer.setId(1L);
-        existingTrainer.setFirstName("John");
-        existingTrainer.setLastName("Doe");
-        trainerDaoCollection.save(existingTrainer);
+    void testSave() throws IOException {
 
-        // When
+        // Given
         Trainer trainer = new Trainer();
         trainer.setFirstName("John");
         trainer.setLastName("Doe");
+        trainer.setUsername("John.Doe");
+        trainer.setPassword("password");
+        trainer.setActive(true);
+
+        // When
         Trainer savedTrainer = trainerDaoCollection.save(trainer);
 
         // Then
-        assertNotEquals("John.Doe", savedTrainer.getUsername());
-        assertTrue(savedTrainer.getUsername().startsWith("John.Doe"));
+        assertNotNull(savedTrainer.getId());
+        assertEquals(trainer.getUsername(), savedTrainer.getUsername());
+        assertEquals(trainer.getFirstName(), savedTrainer.getFirstName());
+        assertEquals(trainer.getLastName(), savedTrainer.getLastName());
+        assertEquals(trainer.getPassword(), savedTrainer.getPassword());
+        assertTrue(savedTrainer.isActive());
     }
 
     @Test
