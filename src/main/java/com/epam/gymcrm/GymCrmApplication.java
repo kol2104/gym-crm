@@ -22,6 +22,34 @@ public class GymCrmApplication {
 
 		GymFacade gymFacade = context.getBean(GymFacade.class);
 
+		modelOperations(gymFacade);
+
+		// Close the application context
+		context.close();
+	}
+
+	private static void modelOperations(GymFacade gymFacade) {
+		printAllModels(gymFacade);
+
+		TrainingType trainingType = new TrainingType();
+		trainingType.setName("running");
+
+		Trainee createdTrainee = createTrainee(gymFacade);
+		Trainer createdTrainer = createTrainer(gymFacade, trainingType);
+		createTraining(gymFacade, createdTrainee, createdTrainer, trainingType);
+
+		updateTrainee(gymFacade, createdTrainee.getId());
+
+		updateTrainer(gymFacade, createdTrainer.getId());
+
+		printTraineeById(gymFacade, createdTrainee.getId());
+
+		printTrainerById(gymFacade, createdTrainer.getId());
+
+		deleteTrainee(gymFacade, createdTrainee.getId());
+	}
+
+	private static void printAllModels(GymFacade gymFacade) {
 		// Fetch all trainers
 		List<Trainer> trainers = gymFacade.getTrainers();
 		log.info("Trainers: {}", trainers);
@@ -33,7 +61,24 @@ public class GymCrmApplication {
 		// Fetch all trainings
 		List<Training> trainings = gymFacade.getTrainings();
 		log.info("Trainings: {}", trainings);
+	}
 
+	private static void updateTrainee(GymFacade gymFacade, Long traineeId) {
+		Trainee updatedTrainee = gymFacade.updateTrainee(traineeId, new Trainee());
+		log.info("Updated Trainee: {}", updatedTrainee);
+	}
+
+	private static void updateTrainer(GymFacade gymFacade, Long trainerId) {
+		Trainer updatedTrainer = gymFacade.updateTrainer(trainerId, new Trainer());
+		log.info("Updated Trainer: {}", updatedTrainer);
+	}
+
+	private static void deleteTrainee(GymFacade gymFacade, Long traineeId) {
+		gymFacade.deleteTrainee(traineeId);
+		log.info("Deleted Trainee with ID: {}", traineeId);
+	}
+
+	private static Trainee createTrainee(GymFacade gymFacade) {
 		// Created a new trainee
 		Trainee newTrainee = new Trainee();
 		newTrainee.setFirstName("John");
@@ -43,17 +88,22 @@ public class GymCrmApplication {
 		newTrainee.setActive(true);
 		Trainee createdTrainee = gymFacade.createTrainee(newTrainee);
 		log.info("Created Trainee: {}", createdTrainee);
+		return createdTrainee;
+	}
 
+	private static Trainer createTrainer(GymFacade gymFacade, TrainingType trainingType) {
 		// Created a new trainer
 		Trainer newTrainer = new Trainer();
 		newTrainer.setFirstName("Jane");
 		newTrainer.setLastName("Smith");
-		TrainingType trainingType = new TrainingType();
-		trainingType.setName("running");
 		newTrainer.setSpecialization(List.of(trainingType));
 		Trainer createdTrainer = gymFacade.createTrainer(newTrainer);
 		log.info("Created Trainer: {}", createdTrainer);
+		return createdTrainer;
+	}
 
+	private static Training createTraining(GymFacade gymFacade, Trainee trainee,
+										   Trainer trainer, TrainingType trainingType) {
 		// Created a new training
 		Training newTraining = new Training();
 		newTraining.setTrainingName("Gym Session");
@@ -62,33 +112,21 @@ public class GymCrmApplication {
 		);
 		newTraining.setTrainingDuration(90);
 		newTraining.setTrainingType(trainingType);
-		newTraining.setTrainerId(createdTrainer.getId());
-		newTraining.setTraineeId(createdTrainee.getId());
+		newTraining.setTrainerId(trainee.getId());
+		newTraining.setTraineeId(trainer.getId());
 		Training createdTraining = gymFacade.createTraining(newTraining);
 		log.info("Created Training: {}", createdTraining);
+		return createdTraining;
+	}
 
-		// Update a trainee
-		Trainee updatedTrainee = gymFacade.updateTrainee(createdTrainee.getId(), new Trainee());
-		log.info("Updated Trainee: {}", updatedTrainee);
-
-		// Update a trainer
-		Trainer updatedTrainer = gymFacade.updateTrainer(createdTrainer.getId(), new Trainer());
-		log.info("Updated Trainer: {}", updatedTrainer);
-
-		// Find a trainee by ID
-		Trainee foundTrainee = gymFacade.getTraineeById(createdTrainee.getId());
+	private static void printTraineeById(GymFacade gymFacade, Long traineeId) {
+		Trainee foundTrainee = gymFacade.getTraineeById(traineeId);
 		log.info("Found Trainee by ID: {}", foundTrainee);
+	}
 
-		// Find a trainer by ID
-		Trainer foundTrainer = gymFacade.getTrainerById(createdTrainer.getId());
-		log.info("Found Trainer by ID: {}", foundTrainer);
-
-		// Delete a trainee
-		gymFacade.deleteTrainee(createdTrainee.getId());
-		log.info("Deleted Trainee with ID: {}", createdTrainee.getId());
-
-		// Close the application context
-		context.close();
+	private static void printTrainerById(GymFacade gymFacade, Long trainerId) {
+		Trainer foundTrainer = gymFacade.getTrainerById(trainerId);
+		log.info("Found Trainee by ID: {}", foundTrainer);
 	}
 
 }
