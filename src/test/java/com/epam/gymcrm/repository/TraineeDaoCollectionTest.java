@@ -21,7 +21,7 @@ class TraineeDaoCollectionTest {
     private TraineeDaoCollection traineeDaoCollection;
 
     @Test
-    void testCreate() throws Exception {
+    void testCreate() {
         // Given
         Trainee trainee = new Trainee();
         trainee.setFirstName("John");

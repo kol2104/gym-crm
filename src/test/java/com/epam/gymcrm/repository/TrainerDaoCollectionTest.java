@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,7 +22,7 @@ class TrainerDaoCollectionTest {
     private TrainerDaoCollection trainerDaoCollection;
 
     @Test
-    void testCreate() throws IOException {
+    void testCreate() {
 
         // Given
         Trainer trainer = new Trainer();
@@ -79,7 +78,7 @@ class TrainerDaoCollectionTest {
     }
 
     @Test
-    void testUpdate_ExistentTrainer() throws IOException {
+    void testUpdate_ExistentTrainer() {
         // Given
         Trainer existingTrainer = new Trainer();
         existingTrainer.setId(1L);
