@@ -1,0 +1,22 @@
+[
+  {
+    "traineeId": 1,
+    "trainerId": 1,
+    "trainingName": "Training 1",
+    "trainingType": {
+      "name": "fitness"
+    },
+    "trainingDate": "2024-02-25 17:30",
+    "trainingDuration": 60
+  },
+  {
+    "traineeId": 2,
+    "trainerId": 1,
+    "trainingName": "Training 10",
+    "trainingType": {
+      "name": "running"
+    },
+    "trainingDate": "2024-02-26 19:30",
+    "trainingDuration": 90
+  }
+]

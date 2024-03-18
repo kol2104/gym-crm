@@ -1,0 +1,20 @@
+[
+  {
+    "firstName": "name",
+    "lastName": "lastName",
+    "username": "name.lastName",
+    "password": "password",
+    "active": "true",
+    "dateOfBirth": "1996-09-25",
+    "address": "Address Example 1"
+  },
+  {
+    "firstName": "name2",
+    "lastName": "lastName2",
+    "username": "name2.lastName2",
+    "password": "password2",
+    "active": "false",
+    "dateOfBirth": "1987-11-15",
+    "address": "Address Example 2"
+  }
+]
