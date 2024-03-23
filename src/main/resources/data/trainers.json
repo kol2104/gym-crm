@@ -5,14 +5,10 @@
     "username": "name.lastName",
     "password": "password",
     "active": "true",
-    "specialization": [
-      {
+    "specialization": {
+        "id": "1",
         "name": "fitness"
-      },
-      {
-        "name": "running"
-      }
-    ]
+    }
   },
   {
     "firstName": "name2",
@@ -20,10 +16,9 @@
     "username": "name2.lastName2",
     "password": "password2",
     "active": "false",
-    "specialization": [
-      {
-        "name": "running"
-      }
-    ]
+    "specialization": {
+      "id": "2",
+      "name": "running"
+    }
   }
 ]
