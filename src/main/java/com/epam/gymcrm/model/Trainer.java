@@ -1,16 +1,19 @@
 package com.epam.gymcrm.model;
 
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-import java.util.List;
-
-@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "trainers")
 @Getter
 @Setter
-@ToString(callSuper = true)
 public class Trainer extends User {
-    private List<TrainingType> specialization;
+    @ManyToOne(targetEntity = TrainingType.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "specialization", nullable = false)
+    private TrainingType specialization;
 }
