@@ -6,17 +6,14 @@
 
     <changeSet id="003-create-trainees-table" author="nikolai.karasev">
         <createTable tableName="trainees">
-            <column name="id" type="BIGINT">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="address" type="VARCHAR(255)"/>
             <column name="date_of_birth" type="DATE"/>
-            <column name="user_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="trainees" baseColumnNames="user_id"
+        <addForeignKeyConstraint baseTableName="trainees" baseColumnNames="id"
                                  constraintName="trainees_users_fk" referencedTableName="users"
                                  referencedColumnNames="id" onUpdate="CASCADE" onDelete="CASCADE"/>
     </changeSet>

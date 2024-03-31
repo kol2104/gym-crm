@@ -6,7 +6,7 @@
 
     <changeSet id="005-create-trainings-table" author="nikolai.karasev">
         <createTable tableName="trainings">
-            <column name="id" type="BIGINT">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="trainee_id" type="BIGINT">
