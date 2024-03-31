@@ -1,15 +1,12 @@
 package com.epam.gymcrm.service.impl;
 
 import com.epam.gymcrm.dao.TrainerDao;
-import com.epam.gymcrm.exception.TraineeNotFoundException;
 import com.epam.gymcrm.exception.TrainerNotFoundException;
-import com.epam.gymcrm.model.Trainee;
 import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.service.TrainerService;
 import com.epam.gymcrm.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
