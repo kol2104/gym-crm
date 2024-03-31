@@ -39,7 +39,6 @@ public class HibernateConfiguration {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty("datasource.driver_class"));
         dataSource.setUrl(env.getRequiredProperty("datasource.url"));
         dataSource.setUsername(env.getRequiredProperty("datasource.username"));
         dataSource.setPassword(env.getRequiredProperty("datasource.password"));
@@ -56,6 +55,7 @@ public class HibernateConfiguration {
     private Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.show_sql", env.getRequiredProperty("datasource.hibernate.show_sql"));
+        hibernateProperties.setProperty("hibernate.dialect", env.getRequiredProperty("datasource.hibernate.dialect"));
 
         return hibernateProperties;
     }
