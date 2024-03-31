@@ -114,9 +114,9 @@ class TrainerServiceImplTest {
 
         when(trainerDao.getByUsername(nonExistingUsername)).thenReturn(Optional.empty());
 
-        TrainerNotFoundException exception = assertThrows(TrainerNotFoundException.class, () -> {
-            trainerService.getByUsername(nonExistingUsername);
-        });
+        TrainerNotFoundException exception = assertThrows(TrainerNotFoundException.class, () ->
+            trainerService.getByUsername(nonExistingUsername)
+        );
 
         assertEquals("Trainer with username '" + nonExistingUsername + "' not found", exception.getMessage());
         verify(trainerDao, times(1)).getByUsername(nonExistingUsername);
