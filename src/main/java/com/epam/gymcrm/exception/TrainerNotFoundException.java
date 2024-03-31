@@ -8,8 +8,4 @@ public class TrainerNotFoundException extends RuntimeException {
     public TrainerNotFoundException(String username) {
         super("Trainer with username '" + username + "' not found");
     }
-
-    public TrainerNotFoundException(String username, String password) {
-        super("Trainer with username '" + username + "' and password '" + password + "' not found");
-    }
 }

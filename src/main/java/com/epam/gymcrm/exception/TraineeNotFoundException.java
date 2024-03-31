@@ -8,8 +8,4 @@ public class TraineeNotFoundException extends RuntimeException {
     public TraineeNotFoundException(String username) {
         super("Trainee with username '" + username + "' not found");
     }
-
-    public TraineeNotFoundException(String username, String password) {
-        super("Trainee with username '" + username + "' and password '" + password + "' not found");
-    }
 }
