@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "trainings")
 @Getter
 @Setter
+@ToString
 public class Training {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +27,12 @@ public class Training {
 
     @ManyToOne(targetEntity = Trainee.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "trainee_id", nullable = false)
+    @ToString.Exclude
     private Trainee trainee;
 
     @ManyToOne(targetEntity = Trainer.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_id", nullable = false)
+    @ToString.Exclude
     private Trainer trainer;
 
     @Column(name = "name", nullable = false)
@@ -36,6 +40,7 @@ public class Training {
 
     @ManyToOne(targetEntity = TrainingType.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "training_type_id", nullable = false)
+    @ToString.Exclude
     private TrainingType trainingType;
 
     @Column(name = "training_date", nullable = false)
