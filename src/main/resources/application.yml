@@ -2,14 +2,6 @@ datasource:
   url: jdbc:mysql://localhost:3306/gym_crm_db
   username: my_username
   password: my_password
-  driver_class: com.mysql.jdbc.Driver
   hibernate:
     show_sql: true
-
-
-data:
-  json:
-    path:
-      trainers: data/trainers.json
-      trainees: data/trainees.json
-      trainings: data/trainings.json
+    dialect: org.hibernate.dialect.MySQLDialect
