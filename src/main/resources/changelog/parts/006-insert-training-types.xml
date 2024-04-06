@@ -1,0 +1,20 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="006-insert-training-types" author="nikolai.karasev">
+        <insert tableName="training_types">
+            <column name="name" value="fitness"/>
+        </insert>
+        <insert tableName="training_types">
+            <column name="name" value="running"/>
+        </insert>
+        <insert tableName="training_types">
+            <column name="name" value="swimming"/>
+        </insert>
+        <insert tableName="training_types">
+            <column name="name" value="skiing"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

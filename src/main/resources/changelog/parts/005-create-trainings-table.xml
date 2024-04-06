@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="005-create-trainings-table" author="nikolai.karasev">
+        <createTable tableName="trainings">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="trainee_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trainer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="training_type_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="training_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="training_duration" type="number">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="trainings" baseColumnNames="trainee_id"
+                                 constraintName="trainings_trainees_fk" referencedTableName="trainees"
+                                 referencedColumnNames="id" onUpdate="CASCADE" onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="trainings" baseColumnNames="trainer_id"
+                                 constraintName="trainings_trainers_fk" referencedTableName="trainers"
+                                 referencedColumnNames="id" onUpdate="CASCADE" onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="trainings" baseColumnNames="training_type_id"
+                                 constraintName="trainings_training_types_fk" referencedTableName="training_types"
+                                 referencedColumnNames="id" onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>

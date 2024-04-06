@@ -9,6 +9,8 @@ public interface TrainerDao {
     Trainer create(Trainer t);
     List<Trainer> getAll();
     Optional<Trainer> getById(Long id);
+    Optional<Trainer> getByUsername(String username);
+    Optional<Trainer> getByUsernameAndPassword(String username, String password);
     Trainer update(Trainer t);
     Optional<Trainer> getByFirstNameAndLastName(String firstName, String lastName);
 }
