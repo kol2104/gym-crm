@@ -53,7 +53,7 @@ public class TraineeDaoDatabase implements TraineeDao {
         List<Trainer> trainers = entityManager.createQuery("select tr " +
                         "from Trainee te join te.trainers tt with te.username = :username " +
                         "right join Trainer tr on tt.id = tr.id " +
-                        "where te is null", Trainer.class)
+                        "where te is null and tr.isActive = true", Trainer.class)
                 .setParameter("username", username)
                 .getResultList();
         log.debug("Found {} trainers.", trainers.size());
