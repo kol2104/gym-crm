@@ -14,24 +14,22 @@ public class GymCrmApplication {
 	public static void main(String[] args) throws LifecycleException {
 		Tomcat tomcat = new Tomcat();
 		tomcat.setPort(8080);
+		tomcat.setBaseDir("src/main");
+		tomcat.getConnector();
 
-		Context servletContext = tomcat.addContext("/", null);
+		Context servletContext = tomcat.addContext("", "");
 
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.setServletContext(servletContext.getServletContext());
 		context.register(SpringConfiguration.class);
 		context.refresh();
 
-
-		tomcat.addServlet("/", "dispatcherServlet", new DispatcherServlet(context));
+		Tomcat.addServlet(servletContext, "dispatcherServlet", new DispatcherServlet(context));
 		servletContext.addServletMappingDecoded("/*", "dispatcherServlet");
 
-
-		// Start Tomcat
 		tomcat.start();
-		tomcat.getServer().await(); // Wait for Tomcat to finish
+		tomcat.getServer().await();
 
-		// Close the application context
 		context.close();
 	}
 
