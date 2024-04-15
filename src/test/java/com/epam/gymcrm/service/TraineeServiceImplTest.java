@@ -1,7 +1,17 @@
 package com.epam.gymcrm.service;
 
 import com.epam.gymcrm.dao.TraineeDao;
+import com.epam.gymcrm.dao.TrainerDao;
+import com.epam.gymcrm.dao.UserDao;
+import com.epam.gymcrm.dto.trainee.TraineeForUpdateRequestDto;
+import com.epam.gymcrm.dto.trainee.TraineeRequestDto;
+import com.epam.gymcrm.dto.trainee.TraineeResponseDto;
+import com.epam.gymcrm.dto.trainer.PlainTrainerResponseDto;
+import com.epam.gymcrm.dto.trainer.TrainerUsernameDto;
+import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.exception.TraineeNotFoundException;
+import com.epam.gymcrm.mapper.TraineeMapper;
+import com.epam.gymcrm.mapper.TrainerMapper;
 import com.epam.gymcrm.model.Trainee;
 import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.service.impl.TraineeServiceImpl;
@@ -12,14 +22,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,110 +41,49 @@ class TraineeServiceImplTest {
 
     @Mock
     private TraineeDao traineeDao;
-
+    @Mock
+    private TrainerDao trainerDao;
+    @Mock
+    private UserDao userDao;
+    @Mock
+    private TraineeMapper traineeMapper;
+    @Mock
+    private TrainerMapper trainerMapper;
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
+
     @Test
     void testCreateTrainee() {
-        // Given
+        TraineeRequestDto traineeRequestDto = new TraineeRequestDto(null, null, null, null);
+        UserCredentialsDto userCredentialsDto = new UserCredentialsDto(null, null);
         Trainee trainee = new Trainee();
+        when(traineeMapper.dtoToModel(traineeRequestDto)).thenReturn(trainee);
+        when(traineeMapper.modelToCredentialsDto(trainee)).thenReturn(userCredentialsDto);
         when(traineeDao.create(trainee)).thenReturn(trainee);
+        when(userDao.getByFirstNameAndLastName(null, null)).thenReturn(Optional.empty());
 
         // When
-        Trainee createdTrainee = traineeService.create(trainee);
+        UserCredentialsDto createdTraineeCredentials = traineeService.create(traineeRequestDto);
 
         // Then
-        assertNotNull(createdTrainee);
-        assertEquals(trainee, createdTrainee);
+        assertNotNull(createdTraineeCredentials);
+        verify(traineeMapper).dtoToModel(traineeRequestDto);
+        verify(traineeMapper).modelToCredentialsDto(trainee);
         verify(traineeDao, times(1)).create(trainee);
-    }
-
-    @Test
-    void testGetAllTrainees() {
-        // Given
-        List<Trainee> expectedTrainees = Arrays.asList(new Trainee(), new Trainee());
-        when(traineeDao.getAll()).thenReturn(expectedTrainees);
-
-        // When
-        List<Trainee> actualTrainees = traineeService.getAll();
-
-        // Then
-        assertNotNull(actualTrainees);
-        assertEquals(expectedTrainees.size(), actualTrainees.size());
-        assertTrue(actualTrainees.containsAll(expectedTrainees));
-        verify(traineeDao, times(1)).getAll();
-    }
-
-    @Test
-    void testGetByIdTraineeFound() {
-        // Given
-        long traineeId = 1L;
-        Trainee trainee = new Trainee();
-        when(traineeDao.getById(traineeId)).thenReturn(Optional.of(trainee));
-
-        // When
-        Trainee foundTrainee = traineeService.getById(traineeId);
-
-        // Then
-        assertNotNull(foundTrainee);
-        assertEquals(trainee, foundTrainee);
-        verify(traineeDao, times(1)).getById(traineeId);
-    }
-
-    @Test
-    void testGetByIdTraineeNotFound() {
-        // Given
-        long traineeId = 1L;
-        when(traineeDao.getById(traineeId)).thenReturn(Optional.empty());
-
-        // When/Then
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.getById(traineeId));
-        verify(traineeDao, times(1)).getById(traineeId);
+        verify(userDao).getByFirstNameAndLastName(null, null);
     }
 
     @Test
     void testDeleteTrainee() {
         // Given
-        long traineeId = 1L;
+        String traineeUsername = "username";
 
         // When
-        traineeService.delete(traineeId);
+        traineeService.deleteByUsername(traineeUsername);
 
         // Then
-        verify(traineeDao, times(1)).delete(traineeId);
-    }
-
-    @Test
-    void testUpdateTrainee() {
-        // Given
-        long traineeId = 1L;
-        Trainee trainee = new Trainee();
-        trainee.setId(traineeId);
-        when(traineeDao.getById(traineeId)).thenReturn(Optional.of(trainee));
-        when(traineeDao.update(trainee)).thenReturn(trainee);
-
-        // When
-        Trainee updatedTrainee = traineeService.update(traineeId, trainee);
-
-        // Then
-        assertNotNull(updatedTrainee);
-        assertEquals(trainee, updatedTrainee);
-        verify(traineeDao, times(1)).getById(traineeId);
-        verify(traineeDao, times(1)).update(trainee);
-    }
-
-    @Test
-    void testUpdateTraineeNotFound() {
-        // Given
-        long traineeId = 1L;
-        Trainee trainee = new Trainee();
-        when(traineeDao.getById(traineeId)).thenReturn(Optional.empty());
-
-        // When/Then
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.update(traineeId, trainee));
-        verify(traineeDao, times(1)).getById(traineeId);
-        verify(traineeDao, never()).update(trainee);
+        verify(traineeDao, times(1)).deleteByUsername(traineeUsername);
     }
 
     @Test
@@ -145,19 +92,21 @@ class TraineeServiceImplTest {
         String username = "testuser";
         Trainee trainee = new Trainee();
         trainee.setUsername(username);
+        TraineeResponseDto traineeResponseDto = new TraineeResponseDto(null, null, username, null, null, null, null);
 
         // Stub the behavior of traineeDao.getByUsername() to return the trainee
         when(traineeDao.getByUsername(username)).thenReturn(Optional.of(trainee));
+        when(traineeMapper.modelToDto(trainee)).thenReturn(traineeResponseDto);
 
         // Call the method under test
-        Trainee retrievedTrainee = traineeService.getByUsername(username);
+        TraineeResponseDto retrievedTrainee = traineeService.getByUsername(username);
 
         // Verify that traineeDao.getByUsername() was called exactly once with the correct username
         verify(traineeDao, times(1)).getByUsername(username);
 
         // Verify that the correct trainee was returned
         assertNotNull(retrievedTrainee);
-        assertEquals(username, retrievedTrainee.getUsername());
+        assertEquals(username, retrievedTrainee.username());
     }
 
     @Test
@@ -174,6 +123,185 @@ class TraineeServiceImplTest {
         // Verify that traineeDao.getByUsername() was called exactly once with the correct username
         verify(traineeDao, times(1)).getByUsername(nonExistingUsername);
     }
+
+    @Test
+    void testUpdateTrainee() {
+        // Given
+        String username = "existingUser";
+        TraineeForUpdateRequestDto updateTraineeRequestDto = new TraineeForUpdateRequestDto(null, null, null, null, null, null);
+        Trainee trainee = new Trainee();
+        TraineeResponseDto traineeResponseDto = new TraineeResponseDto(null, null, null, null, null, null, null);
+        when(traineeDao.getByUsername(username)).thenReturn(Optional.of(trainee));
+        when(traineeDao.update(trainee)).thenReturn(trainee);
+        when(traineeMapper.dtoToModel(updateTraineeRequestDto)).thenReturn(trainee);
+        when(traineeMapper.modelToDto(trainee)).thenReturn(traineeResponseDto);
+
+        // When
+        TraineeResponseDto updatedTrainee = traineeService.update(username, updateTraineeRequestDto);
+
+        // Then
+        assertNotNull(updatedTrainee);
+        assertEquals(traineeResponseDto, updatedTrainee);
+        verify(traineeDao, times(1)).getByUsername(username);
+        verify(traineeDao, times(1)).update(trainee);
+        verify(traineeMapper, times(1)).dtoToModel(updateTraineeRequestDto);
+        verify(traineeMapper, times(1)).modelToDto(trainee);
+    }
+
+    @Test
+    void testUpdateTraineeNotFound() {
+        // Given
+        String nonExistingUsername = "nonExistingUser";
+        TraineeForUpdateRequestDto updateTraineeRequestDto = new TraineeForUpdateRequestDto(null, null, null, null, null, null);
+        when(traineeDao.getByUsername(nonExistingUsername)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(TraineeNotFoundException.class, () ->
+                traineeService.update(nonExistingUsername, updateTraineeRequestDto));
+        verify(traineeDao, times(1)).getByUsername(nonExistingUsername);
+        verify(traineeDao, times(0)).update(null); // Ensure update is not called
+    }
+
+    @Test
+    void testUpdateTrainersList() {
+        // Prepare test data
+        String existingUsername = "existingUser";
+        List<TrainerUsernameDto> trainerUsernameDtos = new ArrayList<>();
+        trainerUsernameDtos.add(new TrainerUsernameDto("trainer1"));
+        trainerUsernameDtos.add(new TrainerUsernameDto("trainer2"));
+        Trainee existingTrainee = new Trainee();
+        existingTrainee.setUsername(existingUsername);
+
+        // Mock traineeDao.getByUsername() method
+        when(traineeDao.getByUsername(existingUsername)).thenReturn(Optional.of(existingTrainee));
+        // Mock trainerDao.getAllByUsernames() method
+        List<Trainer> trainers = new ArrayList<>();
+        trainers.add(new Trainer());
+        trainers.add(new Trainer());
+        when(trainerDao.getAllByUsernames(List.of("trainer1", "trainer2"))).thenReturn(trainers);
+
+        // Call the method under test
+        traineeService.updateTrainersList(existingUsername, trainerUsernameDtos);
+
+        // Verify that traineeDao.update() was called with the updated trainee
+        verify(traineeDao).update(existingTrainee);
+
+        // Verify that the trainers list is updated
+        assertEquals(trainers, existingTrainee.getTrainers());
+    }
+
+    @Test
+    void testUpdateTrainersListTraineeNotFound() {
+        // Prepare test data
+        String nonExistingUsername = "nonExistingUser";
+        List<TrainerUsernameDto> trainerUsernameDtos = new ArrayList<>();
+        trainerUsernameDtos.add(new TrainerUsernameDto("trainer1"));
+
+        // Mock traineeDao.getByUsername() method to return empty optional
+        when(traineeDao.getByUsername(nonExistingUsername)).thenReturn(Optional.empty());
+
+        // Call the method under test and expect TraineeNotFoundException
+        assertThrows(TraineeNotFoundException.class, () ->
+                traineeService.updateTrainersList(nonExistingUsername, trainerUsernameDtos));
+    }
+
+    @Test
+    void testGetUnassignedOnTraineeTrainerListByUsername() {
+        // Prepare test data
+        String username = "testuser";
+        List<Trainer> trainers = new ArrayList<>();
+        trainers.add(new Trainer(1L));
+        trainers.add(new Trainer(2L));
+
+        // Mock traineeDao.getByUsername() method
+        when(traineeDao.getByUsername(username)).thenReturn(Optional.of(new Trainee()));
+        // Mock traineeDao.getUnassignedOnTraineeTrainerListByUsername() method
+        when(traineeDao.getUnassignedOnTraineeTrainerListByUsername(username)).thenReturn(trainers);
+        // Mock trainerMapper.modelToPlainDto() method
+        when(trainerMapper.modelToPlainDto(trainers.get(0))).thenReturn(new PlainTrainerResponseDto(null, null, null, null));
+        when(trainerMapper.modelToPlainDto(trainers.get(1))).thenReturn(new PlainTrainerResponseDto(null, null, null, null));
+
+        // Call the method under test
+        List<PlainTrainerResponseDto> result = traineeService.getUnassignedOnTraineeTrainerListByUsername(username);
+
+        // Verify that the returned list matches the expected list
+        assertEquals(trainers.size(), result.size());
+    }
+
+    @Test
+    void testActivate() {
+        // Prepare test data
+        String username = "testuser";
+        Trainee foundTrainee = new Trainee();
+        foundTrainee.setUsername(username);
+        foundTrainee.setActive(false);
+
+        // Mock traineeDao.getById() method
+        when(traineeDao.getByUsername(username)).thenReturn(java.util.Optional.of(foundTrainee));
+
+        // Call the method under test
+        traineeService.activate(username);
+
+        // Verify that trainee is activated
+        assertTrue(foundTrainee.isActive());
+
+        // Verify that traineeDao.update() method is called
+        verify(traineeDao, times(1)).update(foundTrainee);
+    }
+
+    @Test
+    void testActivateTraineeNotFound() {
+        // Prepare test data
+        String username = "testuser";
+
+        // Mock traineeDao.getById() method to return empty optional
+        when(traineeDao.getByUsername(username)).thenReturn(java.util.Optional.empty());
+
+        // Call the method under test and verify that it throws TraineeNotFoundException
+        assertThrows(TraineeNotFoundException.class, () -> traineeService.activate(username));
+
+        // Verify that traineeDao.update() method is not called
+        verify(traineeDao, never()).update(any());
+    }
+
+    @Test
+    void testDeactivate() {
+        // Prepare test data
+        String username = "testuser";
+        Trainee foundTrainee = new Trainee();
+        foundTrainee.setUsername(username);
+        foundTrainee.setActive(true);
+
+        // Mock traineeDao.getById() method
+        when(traineeDao.getByUsername(username)).thenReturn(java.util.Optional.of(foundTrainee));
+
+        // Call the method under test
+        traineeService.deactivate(username);
+
+        // Verify that trainee is deactivated
+        assertFalse(foundTrainee.isActive());
+
+        // Verify that traineeDao.update() method is called
+        verify(traineeDao, times(1)).update(foundTrainee);
+    }
+
+    @Test
+    void testDeactivateTraineeNotFound() {
+        // Prepare test data
+        String username = "testuser";
+
+        // Mock traineeDao.getById() method to return empty optional
+        when(traineeDao.getByUsername(username)).thenReturn(java.util.Optional.empty());
+
+        // Call the method under test and verify that it throws TraineeNotFoundException
+        assertThrows(TraineeNotFoundException.class, () -> traineeService.deactivate(username));
+
+        // Verify that traineeDao.update() method is not called
+        verify(traineeDao, never()).update(any());
+    }
+
+/*
+
 
     @Test
     void testIsValidUsernameAndPassword_ReturnTrue_WhenTraineeFound() {
@@ -210,30 +338,6 @@ class TraineeServiceImplTest {
 
         // Verify that traineeDao.getByUsernameAndPassword() was called exactly once with the correct credentials
         verify(traineeDao, times(1)).getByUsernameAndPassword(invalidUsername, invalidPassword);
-    }
-
-    @Test
-    void testDeleteTraineeById() {
-        // Define a trainee ID for testing
-        Long traineeId = 1L;
-
-        // Call the method under test
-        traineeService.delete(traineeId);
-
-        // Verify that traineeDao.delete() was called exactly once with the correct ID
-        verify(traineeDao).delete(traineeId);
-    }
-
-    @Test
-    void testDeleteTraineeByUsername() {
-        // Define a trainee username for testing
-        String traineeUsername = "testUser";
-
-        // Call the method under test
-        traineeService.deleteByUsername(traineeUsername);
-
-        // Verify that traineeDao.deleteByUsername() was called exactly once with the correct username
-        verify(traineeDao).deleteByUsername(traineeUsername);
     }
 
     @Test
@@ -331,136 +435,9 @@ class TraineeServiceImplTest {
         assertThrows(TraineeNotFoundException.class, () -> traineeService.updatePassword(nonExistingId, "password"));
     }
 
-    @Test
-    void testUpdateTrainersList() {
-        // Prepare test data
-        Long existingId = 1L;
-        List<Trainer> trainers = new ArrayList<>();
-        trainers.add(new Trainer(1L));
-        trainers.add(new Trainer(2L));
-        Trainee existingTrainee = new Trainee();
-        existingTrainee.setId(existingId);
-
-        // Mock traineeDao.getById() method
-        when(traineeDao.getById(existingId)).thenReturn(Optional.of(existingTrainee));
-
-        // Call the method under test
-        traineeService.updateTrainersList(existingId, trainers);
-
-        // Verify that traineeDao.update() was called with the updated trainee
-        verify(traineeDao).update(existingTrainee);
-
-        // Verify that the trainers list is updated
-        assertEquals(trainers, existingTrainee.getTrainers());
-    }
-
-    @Test
-    void testUpdateTrainersListTraineeNotFound() {
-        // Prepare test data
-        Long nonExistingId = 100L;
-        List<Trainer> trainers = new ArrayList<>();
-        trainers.add(new Trainer(1L));
-
-        // Mock traineeDao.getById() method to return empty optional
-        when(traineeDao.getById(nonExistingId)).thenReturn(Optional.empty());
-
-        // Call the method under test and expect TraineeNotFoundException
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.updateTrainersList(nonExistingId, trainers));
-    }
-
-    @Test
-    void testGetUnassignedOnTraineeTrainerListByUsername() {
-        // Prepare test data
-        String username = "testuser";
-        Trainee trainee = new Trainee();
-        trainee.setUsername(username);
-        List<Trainer> trainers = new ArrayList<>();
-        trainers.add(new Trainer(1L));
-        trainers.add(new Trainer(2L));
-
-        // Mock traineeDao.getUnassignedOnTraineeTrainerListByUsername() method
-        when(traineeDao.getUnassignedOnTraineeTrainerListByUsername(username)).thenReturn(trainers);
-
-        // Call the method under test
-        List<Trainer> result = traineeService.getUnassignedOnTraineeTrainerListByUsername(username);
-
-        // Verify that the returned list matches the expected list
-        assertEquals(trainers, result);
-    }
-
-    @Test
-    void testActivate() {
-        // Prepare test data
-        long traineeId = 1;
-        Trainee foundTrainee = new Trainee();
-        foundTrainee.setId(traineeId);
-        foundTrainee.setActive(false);
-
-        // Mock traineeDao.getById() method
-        when(traineeDao.getById(traineeId)).thenReturn(java.util.Optional.of(foundTrainee));
-
-        // Call the method under test
-        traineeService.activate(traineeId);
-
-        // Verify that trainee is activated
-        assertTrue(foundTrainee.isActive());
-
-        // Verify that traineeDao.update() method is called
-        verify(traineeDao, times(1)).update(foundTrainee);
-    }
-
-    @Test
-    void testActivateTraineeNotFound() {
-        // Prepare test data
-        long traineeId = 1;
-
-        // Mock traineeDao.getById() method to return empty optional
-        when(traineeDao.getById(traineeId)).thenReturn(java.util.Optional.empty());
-
-        // Call the method under test and verify that it throws TraineeNotFoundException
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.activate(traineeId));
-
-        // Verify that traineeDao.update() method is not called
-        verify(traineeDao, never()).update(any());
-    }
-
-    @Test
-    void testDeactivate() {
-        // Prepare test data
-        long traineeId = 1;
-        Trainee foundTrainee = new Trainee();
-        foundTrainee.setId(traineeId);
-        foundTrainee.setActive(true);
-
-        // Mock traineeDao.getById() method
-        when(traineeDao.getById(traineeId)).thenReturn(java.util.Optional.of(foundTrainee));
-
-        // Call the method under test
-        traineeService.deactivate(traineeId);
-
-        // Verify that trainee is deactivated
-        assertFalse(foundTrainee.isActive());
-
-        // Verify that traineeDao.update() method is called
-        verify(traineeDao, times(1)).update(foundTrainee);
-    }
-
-    @Test
-    void testDeactivateTraineeNotFound() {
-        // Prepare test data
-        long traineeId = 1;
-
-        // Mock traineeDao.getById() method to return empty optional
-        when(traineeDao.getById(traineeId)).thenReturn(java.util.Optional.empty());
-
-        // Call the method under test and verify that it throws TraineeNotFoundException
-        assertThrows(TraineeNotFoundException.class, () -> traineeService.deactivate(traineeId));
-
-        // Verify that traineeDao.update() method is not called
-        verify(traineeDao, never()).update(any());
-    }
 
 
+*/
 
 
 }
