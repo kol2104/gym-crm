@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 public enum TrainingCriteria {
@@ -16,13 +17,17 @@ public enum TrainingCriteria {
     TRAINER_USERNAME("trainer.username"),
     TRAINING_TYPE("trainingType");
 
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     private final String fieldName;
 
     public static Predicate getPredicateForCriterion(TrainingCriteria trainingCriteria, CriteriaBuilder criteriaBuilder,
-                                               Root<Training> trainingRoot, Object value) {
+                                               Root<Training> trainingRoot, String value) {
         return switch (trainingCriteria) {
-            case FROM_DATE -> criteriaBuilder.greaterThanOrEqualTo(trainingRoot.get(trainingCriteria.fieldName), (LocalDateTime) value);
-            case TO_DATE -> criteriaBuilder.lessThanOrEqualTo(trainingRoot.get(trainingCriteria.fieldName), (LocalDateTime) value);
+            case FROM_DATE -> criteriaBuilder.greaterThanOrEqualTo(trainingRoot.get(trainingCriteria.fieldName),
+                    LocalDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+            case TO_DATE -> criteriaBuilder.lessThanOrEqualTo(trainingRoot.get(trainingCriteria.fieldName),
+                    LocalDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
             case TRAINEE_USERNAME, TRAINER_USERNAME, TRAINING_TYPE ->
                     criteriaBuilder.equal(getPath(trainingRoot, trainingCriteria.fieldName), value);
         };
