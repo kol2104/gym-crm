@@ -29,26 +29,6 @@ public class TraineeDaoDatabase implements TraineeDao {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Trainee> getAll() {
-        List<Trainee> allTrainees = entityManager.createQuery("from Trainee", Trainee.class).getResultList();
-        log.debug("Found {} trainees.", allTrainees.size());
-        return allTrainees;
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Trainee> getById(Long id) {
-        Trainee trainee = entityManager.find(Trainee.class, id);
-        if (trainee != null) {
-            log.debug("Found trainee by id {}", id);
-        } else {
-            log.debug("Trainee with id {} not found.", id);
-        }
-        return Optional.ofNullable(trainee);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public List<Trainer> getUnassignedOnTraineeTrainerListByUsername(String username) {
         List<Trainer> trainers = entityManager.createQuery("select tr " +
                         "from Trainee te join te.trainers tt with te.username = :username " +
@@ -64,7 +44,7 @@ public class TraineeDaoDatabase implements TraineeDao {
     @Override
     public Optional<Trainee> getByUsername(String username) {
         Optional<Trainee> foundTrainee = entityManager
-                .createQuery("from Trainee t where t.username = :username", Trainee.class)
+                .createQuery("from Trainee t left join fetch t.trainers where t.username = :username", Trainee.class)
                 .setParameter("username", username)
                 .getResultStream().findFirst();
         if (foundTrainee.isPresent()) {
@@ -127,21 +107,5 @@ public class TraineeDaoDatabase implements TraineeDao {
         } else {
             log.debug("Trainee with username {} not found. Unable to delete.", username);
         }
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Trainee> getByFirstNameAndLastName(String firstName, String lastName) {
-        Optional<Trainee> foundTrainee = entityManager
-                .createQuery("from Trainee t where t.firstName = :firstName and t.lastName = :lastName", Trainee.class)
-                .setParameter("firstName", firstName)
-                .setParameter("lastName", lastName)
-                .getResultStream().findFirst();
-        if (foundTrainee.isPresent()) {
-            log.debug("Found trainee by first name '{}' and last name '{}'", firstName, lastName);
-        } else {
-            log.debug("Trainee with first name '{}' and last name '{}' not found.", firstName, lastName);
-        }
-        return foundTrainee;
     }
 }

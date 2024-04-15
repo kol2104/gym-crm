@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +55,13 @@ public class TrainingDaoDatabase implements TrainingDao {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Training> getTrainingsByCriteria(Map<TrainingCriteria, Object> criteria) {
+    public List<Training> getTrainingsByCriteria(Map<TrainingCriteria, String> criteria) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Training> query = criteriaBuilder.createQuery(Training.class);
         Root<Training> root = query.from(Training.class);
+        root.fetch("trainee", JoinType.LEFT);
+        root.fetch("trainer", JoinType.LEFT);
+        root.fetch("trainingType", JoinType.LEFT);
 
         Predicate predicate = buildPredicate(criteriaBuilder, root, criteria);
 
@@ -69,10 +73,10 @@ public class TrainingDaoDatabase implements TrainingDao {
     }
 
     private Predicate buildPredicate(CriteriaBuilder criteriaBuilder, Root<Training> root,
-                                     Map<TrainingCriteria, Object> criteria) {
+                                     Map<TrainingCriteria, String> criteria) {
         Predicate predicate = criteriaBuilder.conjunction();
 
-        for (Map.Entry<TrainingCriteria, Object> entry : criteria.entrySet()) {
+        for (Map.Entry<TrainingCriteria, String> entry : criteria.entrySet()) {
             Predicate condition = TrainingCriteria.getPredicateForCriterion(
                     entry.getKey(), criteriaBuilder, root, entry.getValue()
             );
