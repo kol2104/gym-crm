@@ -5,6 +5,7 @@ import com.epam.gymcrm.dto.user.UserNewPasswordRequestDto;
 import com.epam.gymcrm.exception.UserNotFoundException;
 import com.epam.gymcrm.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserControllerTest {
 
+    private AutoCloseable mocksClose;
     private MockMvc mockMvc;
     @Mock
     private UserService userService;
@@ -30,9 +32,14 @@ class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocksClose = MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(userController, new GymCrmExceptionHandler()).build();
         objectMapper = new ObjectMapper();
+    }
+
+    @AfterEach
+    public void close() throws Exception {
+        mocksClose.close();
     }
 
     @Test

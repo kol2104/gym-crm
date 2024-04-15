@@ -3,6 +3,7 @@ package com.epam.gymcrm.controller;
 import com.epam.gymcrm.controller.handler.GymCrmExceptionHandler;
 import com.epam.gymcrm.dto.training.TrainingDto;
 import com.epam.gymcrm.service.TrainingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TrainingControllerTest {
 
+    private AutoCloseable mocksClose;
     private MockMvc mockMvc;
     @Mock
     private TrainingService trainingService;
@@ -32,8 +34,13 @@ class TrainingControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocksClose = MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(trainingController, new GymCrmExceptionHandler()).build();
+    }
+
+    @AfterEach
+    public void close() throws Exception {
+        mocksClose.close();
     }
 
     @Test

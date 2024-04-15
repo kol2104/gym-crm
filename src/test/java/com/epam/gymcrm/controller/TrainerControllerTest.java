@@ -8,6 +8,7 @@ import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.exception.TrainerNotFoundException;
 import com.epam.gymcrm.service.TrainerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class TrainerControllerTest {
 
+    private AutoCloseable mocksClose;
     private MockMvc mockMvc;
     @Mock
     private TrainerService trainerService;
@@ -38,9 +40,14 @@ class TrainerControllerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mocksClose = MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(trainerController, new GymCrmExceptionHandler()).build();
         objectMapper = new ObjectMapper();
+    }
+
+    @AfterEach
+    public void close() throws Exception {
+        mocksClose.close();
     }
 
     @Test
