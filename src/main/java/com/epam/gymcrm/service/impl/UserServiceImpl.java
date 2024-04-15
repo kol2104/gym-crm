@@ -7,7 +7,6 @@ import com.epam.gymcrm.dao.UserDao;
 import com.epam.gymcrm.dto.TokenDto;
 import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.dto.user.UserNewPasswordRequestDto;
-import com.epam.gymcrm.exception.TraineeNotFoundException;
 import com.epam.gymcrm.exception.UserNotFoundException;
 import com.epam.gymcrm.model.Role;
 import com.epam.gymcrm.model.User;

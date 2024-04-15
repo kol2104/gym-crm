@@ -7,7 +7,6 @@ import com.epam.gymcrm.dao.TrainingTypeDao;
 import com.epam.gymcrm.dto.training.TrainingDto;
 import com.epam.gymcrm.exception.TraineeNotFoundException;
 import com.epam.gymcrm.exception.TrainerNotFoundException;
-import com.epam.gymcrm.exception.TrainingNotFoundException;
 import com.epam.gymcrm.exception.TrainingTypeNotFoundException;
 import com.epam.gymcrm.mapper.TrainingMapper;
 import com.epam.gymcrm.model.Training;

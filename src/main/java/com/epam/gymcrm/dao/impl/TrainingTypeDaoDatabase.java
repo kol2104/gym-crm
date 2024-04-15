@@ -1,8 +1,6 @@
 package com.epam.gymcrm.dao.impl;
 
 import com.epam.gymcrm.dao.TrainingTypeDao;
-import com.epam.gymcrm.model.Trainee;
-import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.model.TrainingType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
