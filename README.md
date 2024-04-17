@@ -17,12 +17,19 @@ The Gym CRM (Customer Relationship Management) project is designed to facilitate
     cd gym-crm
 
 
-3. Build service
+3. Run docker container
+
+
+    docker-compose up
+
+
+4. Build service
 
 
     mvn clean package
 
-4. Run service
+
+5. Run service
 
 
     java -jar target/gym-crm-0.0.1-SNAPSHOT.jar
