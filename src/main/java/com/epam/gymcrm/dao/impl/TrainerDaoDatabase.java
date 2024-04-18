@@ -28,29 +28,20 @@ public class TrainerDaoDatabase implements TrainerDao {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Trainer> getAll() {
-        List<Trainer> allTrainers = entityManager.createQuery("from Trainer", Trainer.class).getResultList();
+    public List<Trainer> getAllByUsernames(List<String> usernames) {
+        List<Trainer> allTrainers = entityManager
+                .createQuery("from Trainer t where t.username in (:usernames)", Trainer.class)
+                .setParameter("usernames", usernames)
+                .getResultList();
         log.debug("Found {} trainers.", allTrainers.size());
         return allTrainers;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Trainer> getById(Long id) {
-        Trainer trainer = entityManager.find(Trainer.class, id);
-        if (trainer != null) {
-            log.debug("Found trainer by id {}: {}", id, trainer);
-        } else {
-            log.debug("Trainer with id {} not found.", id);
-        }
-        return Optional.ofNullable(trainer);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Optional<Trainer> getByUsername(String username) {
         Optional<Trainer> foundTrainer = entityManager
-                .createQuery("from Trainer t where t.username = :username", Trainer.class)
+                .createQuery("from Trainer t left join fetch t.trainees left join fetch t.specialization where t.username = :username", Trainer.class)
                 .setParameter("username", username)
                 .getResultStream().findFirst();
         if (foundTrainer.isPresent()) {
@@ -87,21 +78,5 @@ public class TrainerDaoDatabase implements TrainerDao {
         entityManager.merge(trainer);
         log.info("Trainer updated successfully: {}", trainer);
         return trainer;
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Trainer> getByFirstNameAndLastName(String firstName, String lastName) {
-        Optional<Trainer> foundTrainer = entityManager
-                .createQuery("from Trainer t where t.firstName = :firstName and t.lastName = :lastName", Trainer.class)
-                .setParameter("firstName", firstName)
-                .setParameter("lastName", lastName)
-                .getResultStream().findFirst();
-        if (foundTrainer.isPresent()) {
-            log.debug("Found trainer by first name '{}' and last name '{}': {}", firstName, lastName, foundTrainer.get());
-        } else {
-            log.debug("Trainer with first name '{}' and last name '{}' not found.", firstName, lastName);
-        }
-        return foundTrainer;
     }
 }

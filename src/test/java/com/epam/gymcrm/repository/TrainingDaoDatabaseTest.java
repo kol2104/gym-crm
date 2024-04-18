@@ -15,8 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -136,8 +134,8 @@ class TrainingDaoDatabaseTest {
         when(typedQueryTraining.getResultList()).thenReturn(Collections.singletonList(new Training()));
 
         // Prepare test data
-        Map<TrainingCriteria, Object> criteria = new HashMap<>();
-        criteria.put(TrainingCriteria.FROM_DATE, LocalDateTime.of(2024, Month.DECEMBER, 23, 14, 30, 0));
+        Map<TrainingCriteria, String> criteria = new HashMap<>();
+        criteria.put(TrainingCriteria.FROM_DATE, "2024-12-23 14:30:00");
 
         // Perform the method call
         List<Training> result = trainingDao.getTrainingsByCriteria(criteria);

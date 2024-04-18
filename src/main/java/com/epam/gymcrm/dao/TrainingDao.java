@@ -11,5 +11,5 @@ public interface TrainingDao {
     Training create(Training t);
     List<Training> getAll();
     Optional<Training> getById(Long id);
-    List<Training> getTrainingsByCriteria(Map<TrainingCriteria, Object> criteria);
+    List<Training> getTrainingsByCriteria(Map<TrainingCriteria, String> criteria);
 }

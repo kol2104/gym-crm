@@ -5,3 +5,7 @@ datasource:
   hibernate:
     show_sql: true
     dialect: org.hibernate.dialect.MySQLDialect
+
+jwt:
+  key: secret_key
+  exp: 3600

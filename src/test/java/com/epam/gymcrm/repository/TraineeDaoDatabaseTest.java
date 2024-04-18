@@ -1,3 +1,4 @@
+
 package com.epam.gymcrm.repository;
 
 import com.epam.gymcrm.dao.impl.TraineeDaoDatabase;
@@ -14,13 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -60,61 +58,6 @@ class TraineeDaoDatabaseTest {
 
         // Verify that the created trainee is returned
         assertEquals(trainee, createdTrainee);
-    }
-
-    @Test
-    void getAllTrainees() {
-        // Test data
-        List<Trainee> trainees = List.of(new Trainee(), new Trainee());
-
-        // Mock EntityManager.createQuery() and Query.getResultList()
-        when(entityManager.createQuery("from Trainee", Trainee.class)).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.getResultList()).thenReturn(trainees);
-
-        // Perform the method call
-        List<Trainee> allTrainees = traineeDao.getAll();
-
-        // Verify EntityManager.createQuery() and Query.getResultList() are called
-        verify(entityManager, times(1)).createQuery("from Trainee", Trainee.class);
-        verify(typedQueryTrainee, times(1)).getResultList();
-
-        // Verify that the list of trainees is returned
-        assertEquals(trainees, allTrainees);
-    }
-
-    @Test
-    void getTraineeById_ReturnsTrainee_WhenTraineeExists() {
-        // Test data
-        Trainee trainee = new Trainee();
-        trainee.setId(1L);
-
-        // Mock EntityManager.find()
-        when(entityManager.find(Trainee.class, 1L)).thenReturn(trainee);
-
-        // Perform the method call
-        Optional<Trainee> foundTrainee = traineeDao.getById(1L);
-
-        // Verify EntityManager.find() is called
-        verify(entityManager, times(1)).find(Trainee.class, 1L);
-
-        // Verify that the trainee is found and returned
-        assertTrue(foundTrainee.isPresent());
-        assertEquals(trainee, foundTrainee.get());
-    }
-
-    @Test
-    void getTraineeById_ReturnsEmptyOptional_WhenTraineeDoesNotExist() {
-        // Mock EntityManager.find() for a non-existent trainee
-        when(entityManager.find(Trainee.class, 1L)).thenReturn(null);
-
-        // Perform the method call
-        Optional<Trainee> foundTrainee = traineeDao.getById(1L);
-
-        // Verify EntityManager.find() is called
-        verify(entityManager, times(1)).find(Trainee.class, 1L);
-
-        // Verify that the trainee is not found
-        assertFalse(foundTrainee.isPresent());
     }
 
     @Test
@@ -325,61 +268,5 @@ class TraineeDaoDatabaseTest {
         // Verify that Query.executeUpdate() is called
         verify(query, times(1)).executeUpdate();
     }
-
-    @Test
-    void getByFirstNameAndLastName_ReturnsTrainee_WhenTraineeExists() {
-        // Test data
-        String firstName = "John";
-        String lastName = "Doe";
-        Trainee trainee = new Trainee();
-
-        // Mock EntityManager.createQuery() to return the query
-        when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQueryTrainee);
-        // Mock Query.setParameter() and Query.getResultStream() to return a Stream
-        when(typedQueryTrainee.setParameter(anyString(), any())).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.getResultStream()).thenReturn(Stream.of(trainee));
-
-        // Perform the method call
-        Optional<Trainee> result = traineeDao.getByFirstNameAndLastName(firstName, lastName);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainee t where t.firstName = :firstName and t.lastName = :lastName", Trainee.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainee, times(1)).setParameter("firstName", firstName);
-        verify(typedQueryTrainee, times(1)).setParameter("lastName", lastName);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainee, times(1)).getResultStream();
-
-        // Assert that the result is not empty
-        assertTrue(result.isPresent());
-        // Assert that the returned trainee matches the expected trainee
-        assertSame(trainee, result.get());
-    }
-
-    @Test
-    void getByFirstNameAndLastName_ReturnsEmptyOptional_WhenTraineeDoesNotExist() {
-        // Test data
-        String firstName = "John";
-        String lastName = "Doe";
-
-        // Mock EntityManager.createQuery() to return the query
-        when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQueryTrainee);
-        // Mock Query.setParameter() and Query.getResultStream() to return an empty Stream
-        when(typedQueryTrainee.setParameter(anyString(), any())).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.getResultStream()).thenReturn(Stream.empty());
-
-        // Perform the method call
-        Optional<Trainee> result = traineeDao.getByFirstNameAndLastName(firstName, lastName);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainee t where t.firstName = :firstName and t.lastName = :lastName", Trainee.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainee, times(1)).setParameter("firstName", firstName);
-        verify(typedQueryTrainee, times(1)).setParameter("lastName", lastName);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainee, times(1)).getResultStream();
-
-        // Assert that the result is empty
-        assertFalse(result.isPresent());
-    }
 }
+

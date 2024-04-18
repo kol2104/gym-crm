@@ -1,3 +1,4 @@
+
 package com.epam.gymcrm.repository;
 
 import com.epam.gymcrm.dao.impl.TrainerDaoDatabase;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -53,68 +55,6 @@ class TrainerDaoDatabaseTest {
     }
 
     @Test
-    void getAll_ReturnsListOfTrainers_WhenTrainersExist() {
-        // Test data
-        List<Trainer> trainers = List.of(new Trainer(), new Trainer());
-
-        // Mock EntityManager.createQuery() to return the query
-        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
-        // Mock Query.getResultList() to return the list of trainers
-        when(typedQueryTrainer.getResultList()).thenReturn(trainers);
-
-        // Perform the method call
-        List<Trainer> result = trainerDao.getAll();
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer", Trainer.class);
-        // Verify that Query.getResultList() is called
-        verify(typedQueryTrainer, times(1)).getResultList();
-
-        // Assert that the returned list of trainers is not empty
-        assertFalse(result.isEmpty());
-        // Assert that the returned list of trainers contains all trainers
-        assertSame(trainers, result);
-    }
-
-    @Test
-    void getById_ReturnsTrainer_WhenTrainerExists() {
-        // Test data
-        long trainerId = 1L;
-        Trainer trainer = new Trainer();
-
-        // Mock EntityManager.find() to return the trainer
-        when(entityManager.find(Trainer.class, trainerId)).thenReturn(trainer);
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getById(trainerId);
-
-        // Verify that EntityManager.find() is called with the correct trainer id
-        verify(entityManager, times(1)).find(Trainer.class, trainerId);
-
-        // Assert that the returned optional contains the trainer
-        assertTrue(result.isPresent());
-        assertSame(trainer, result.get());
-    }
-
-    @Test
-    void getById_ReturnsEmptyOptional_WhenTrainerDoesNotExist() {
-        // Test data
-        long trainerId = 1L;
-
-        // Mock EntityManager.find() to return null
-        when(entityManager.find(Trainer.class, trainerId)).thenReturn(null);
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getById(trainerId);
-
-        // Verify that EntityManager.find() is called with the correct trainer id
-        verify(entityManager, times(1)).find(Trainer.class, trainerId);
-
-        // Assert that the returned optional is empty
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void getByUsername_ReturnsTrainer_WhenTrainerExists() {
         // Test data
         String username = "trainer1";
@@ -130,7 +70,9 @@ class TrainerDaoDatabaseTest {
         Optional<Trainer> result = trainerDao.getByUsername(username);
 
         // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.username = :username", Trainer.class);
+        verify(entityManager, times(1))
+                .createQuery("from Trainer t left join fetch t.trainees left join fetch t.specialization " +
+                        "where t.username = :username", Trainer.class);
         // Verify that Query.setParameter() is called with the correct parameters
         verify(typedQueryTrainer, times(1)).setParameter("username", username);
         // Verify that Query.getResultStream() is called
@@ -140,6 +82,30 @@ class TrainerDaoDatabaseTest {
         assertTrue(result.isPresent());
         // Assert that the returned trainer matches the expected trainer
         assertSame(trainer, result.get());
+    }
+
+    @Test
+    void getAllByUsernames_ReturnsTrainers() {
+        // Test data
+        List<String> usernames = Arrays.asList("user1", "user2");
+        List<Trainer> trainers = Arrays.asList(new Trainer(), new Trainer());
+
+        // Mock EntityManager.createQuery() to return the query
+        when(entityManager.createQuery(any(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
+        // Mock Query.setParameter() and Query.getResultList() to return the trainers
+        when(typedQueryTrainer.setParameter(anyString(), any())).thenReturn(typedQueryTrainer);
+        when(typedQueryTrainer.getResultList()).thenReturn(trainers);
+
+        // Perform the method call
+        List<Trainer> result = trainerDao.getAllByUsernames(usernames);
+
+        // Verify that EntityManager.createQuery() is called with the correct query and class
+        verify(entityManager).createQuery("from Trainer t where t.username in (:usernames)", Trainer.class);
+        // Verify that Query.setParameter() is called with the correct parameters
+        verify(typedQueryTrainer).setParameter("usernames", usernames);
+
+        // Assert that the result matches the expected trainers
+        assertEquals(trainers, result);
     }
 
     @Test
@@ -157,7 +123,9 @@ class TrainerDaoDatabaseTest {
         Optional<Trainer> result = trainerDao.getByUsername(username);
 
         // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.username = :username", Trainer.class);
+        verify(entityManager, times(1))
+                .createQuery("from Trainer t left join fetch t.trainees left join fetch t.specialization " +
+                        "where t.username = :username", Trainer.class);
         // Verify that Query.setParameter() is called with the correct parameters
         verify(typedQueryTrainer, times(1)).setParameter("username", username);
         // Verify that Query.getResultStream() is called
@@ -265,59 +233,5 @@ class TrainerDaoDatabaseTest {
         // Assert that the result is null
         assertNull(result);
     }
-
-    @Test
-    void getByFirstNameAndLastName_ReturnsTrainer_WhenTrainerExists() {
-        // Test data
-        String firstName = "John";
-        String lastName = "Doe";
-        Trainer trainer = new Trainer();
-
-        // Mock Query.setParameter() and Query.getResultStream().findFirst() to return a non-empty Optional
-        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.setParameter(anyString(), any())).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.getResultStream()).thenReturn(Stream.of(trainer)); // Adjusted stubbing
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getByFirstNameAndLastName(firstName, lastName);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.firstName = :firstName and t.lastName = :lastName", Trainer.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainer, times(1)).setParameter("firstName", firstName);
-        verify(typedQueryTrainer, times(1)).setParameter("lastName", lastName);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainer, times(1)).getResultStream();
-
-        // Assert that the result is not empty
-        assertTrue(result.isPresent());
-        // Assert that the result is the same as the input trainer
-        assertEquals(trainer, result.get());
-    }
-
-    @Test
-    void getByFirstNameAndLastName_ReturnsEmptyOptional_WhenTrainerDoesNotExist() {
-        // Test data
-        String firstName = "John";
-        String lastName = "Doe";
-
-        // Mock Query.setParameter() and Query.getResultStream().findFirst() to return an empty Optional
-        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.setParameter(anyString(), any())).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.getResultStream()).thenReturn(Stream.empty()); // Adjusted stubbing
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getByFirstNameAndLastName(firstName, lastName);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.firstName = :firstName and t.lastName = :lastName", Trainer.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainer, times(1)).setParameter("firstName", firstName);
-        verify(typedQueryTrainer, times(1)).setParameter("lastName", lastName);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainer, times(1)).getResultStream();
-
-        // Assert that the result is empty
-        assertTrue(result.isEmpty());
-    }
 }
+

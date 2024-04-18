@@ -1,7 +1,17 @@
 package com.epam.gymcrm.service.impl;
 
 import com.epam.gymcrm.dao.TraineeDao;
+import com.epam.gymcrm.dao.TrainerDao;
+import com.epam.gymcrm.dao.UserDao;
+import com.epam.gymcrm.dto.trainee.TraineeForUpdateRequestDto;
+import com.epam.gymcrm.dto.trainee.TraineeRequestDto;
+import com.epam.gymcrm.dto.trainee.TraineeResponseDto;
+import com.epam.gymcrm.dto.trainer.PlainTrainerResponseDto;
+import com.epam.gymcrm.dto.trainer.TrainerUsernameDto;
+import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.exception.TraineeNotFoundException;
+import com.epam.gymcrm.mapper.TraineeMapper;
+import com.epam.gymcrm.mapper.TrainerMapper;
 import com.epam.gymcrm.model.Trainee;
 import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.service.TraineeService;
@@ -11,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -19,51 +28,31 @@ import java.util.Optional;
 public class TraineeServiceImpl implements TraineeService {
 
     private final TraineeDao traineeDao;
+    private final TrainerDao trainerDao;
+    private final UserDao userDao;
+    private final TraineeMapper traineeMapper;
+    private final TrainerMapper trainerMapper;
 
     @Override
-    public Trainee create(Trainee trainee) {
+    public UserCredentialsDto create(TraineeRequestDto traineeRequestDto) {
+        Trainee trainee = traineeMapper.dtoToModel(traineeRequestDto);
         log.info("Saving trainee: {}", trainee);
         trainee.setUsername(getUsername(trainee.getFirstName(), trainee.getLastName()));
         trainee.setPassword(PasswordUtil.getRandomPassword(10));
-        return traineeDao.create(trainee);
+        trainee.setActive(true);
+        return traineeMapper.modelToCredentialsDto(traineeDao.create(trainee));
     }
 
     @Override
-    public List<Trainee> getAll() {
-        log.info("Retrieving all trainees.");
-        return traineeDao.getAll();
-    }
-
-    @Override
-    public Trainee getById(Long id) {
-        log.info("Finding trainee by id: {}", id);
-        return traineeDao.getById(id)
-                .orElseThrow(() -> {
-                    log.error("Trainee with id {} not found.", id);
-                    return new TraineeNotFoundException(id);
-                });
-    }
-
-    @Override
-    public Trainee getByUsername(String username) {
+    public TraineeResponseDto getByUsername(String username) {
         log.info("Finding trainee by username: {}", username);
-        return traineeDao.getByUsername(username)
-                .orElseThrow(() -> {
-                    log.error("Trainee with username {} not found.", username);
-                    return new TraineeNotFoundException(username);
-                });
-    }
-
-    @Override
-    public boolean isUsernameAndPasswordValid(String username, String password) {
-        log.info("Finding trainee by username '{}' and password", username);
-        return traineeDao.getByUsernameAndPassword(username, password).isPresent();
-    }
-
-    @Override
-    public void delete(Long id) {
-        log.info("Deleting trainee with id: {}", id);
-        traineeDao.delete(id);
+        return traineeMapper.modelToDto(
+                traineeDao.getByUsername(username)
+                        .orElseThrow(() -> {
+                            log.error("Trainee with username {} not found.", username);
+                            return new TraineeNotFoundException(username);
+                        })
+        );
     }
 
     @Override
@@ -73,58 +62,54 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Trainee update(Long id, Trainee trainee) {
-        log.info("Updating trainee with id {}", id);
-        Optional<Trainee> traineeFromDatabase = traineeDao.getById(id);
-        if (traineeFromDatabase.isEmpty()) {
-            log.error("Trainee with id {} not found.", id);
-            throw new TraineeNotFoundException(id);
-        }
-        trainee.setId(id);
-        if (trainee.getUsername() == null) {
-            trainee.setUsername(getUsername(trainee.getFirstName(), trainee.getLastName()));
-        }
-        trainee.setPassword(traineeFromDatabase.get().getPassword());
-        return traineeDao.update(trainee);
+    public TraineeResponseDto update(String username, TraineeForUpdateRequestDto updateTraineeRequestDto) {
+        Trainee trainee = traineeMapper.dtoToModel(updateTraineeRequestDto);
+        log.info("Updating trainee with username {}", username);
+        Trainee traineeFromDatabase = traineeDao.getByUsername(username).orElseThrow(() -> {
+            log.error("Trainee with username {} not found.", username);
+            return new TraineeNotFoundException(username);
+        });
+        trainee.setId(traineeFromDatabase.getId());
+        trainee.setUsername(username);
+        trainee.setPassword(traineeFromDatabase.getPassword());
+        trainee.setTrainers(traineeFromDatabase.getTrainers());
+        return traineeMapper.modelToDto(traineeDao.update(trainee));
     }
 
     @Override
-    public void updatePassword(Long id, String newPassword) {
-        log.info("Updating trainee's password with id {}", id);
-        if (newPassword == null) {
-            log.warn("Passed new password is null");
-        }
-        Trainee foundTrainee = traineeDao.getById(id).orElseThrow(() -> {
-            log.error("Trainee with id {} not found.", id);
-            return new TraineeNotFoundException(id);
+    public void updateTrainersList(String username, List<TrainerUsernameDto> trainerUsernameDtos) {
+        log.info("Updating trainee's trainers list with username {}", username);
+        Trainee foundTrainee = traineeDao.getByUsername(username).orElseThrow(() -> {
+            log.error("Trainee with username {} not found.", username);
+            return new TraineeNotFoundException(username);
         });
-        foundTrainee.setPassword(newPassword);
-        traineeDao.update(foundTrainee);
-    }
-
-    @Override
-    public void updateTrainersList(Long id, List<Trainer> trainers) {
-        log.info("Updating trainee's trainers list with id {}", id);
-        Trainee foundTrainee = traineeDao.getById(id).orElseThrow(() -> {
-            log.error("Trainee with id {} not found.", id);
-            return new TraineeNotFoundException(id);
-        });
+        List<Trainer> trainers = trainerDao.getAllByUsernames(
+                trainerUsernameDtos.stream()
+                        .map(TrainerUsernameDto::username)
+                        .toList()
+        );
         foundTrainee.setTrainers(trainers);
         traineeDao.update(foundTrainee);
     }
 
     @Override
-    public List<Trainer> getUnassignedOnTraineeTrainerListByUsername(String username) {
+    public List<PlainTrainerResponseDto> getUnassignedOnTraineeTrainerListByUsername(String username) {
         log.info("Retrieving trainers list that not assigned on trainee by trainee's username.");
-        return traineeDao.getUnassignedOnTraineeTrainerListByUsername(username);
+        if (traineeDao.getByUsername(username).isEmpty()) {
+            log.error("Trainee with username {} not found.", username);
+            throw new TraineeNotFoundException(username);
+        }
+        return traineeDao.getUnassignedOnTraineeTrainerListByUsername(username).stream()
+                .map(trainerMapper::modelToPlainDto)
+                .toList();
     }
 
     @Override
-    public void activate(Long id) {
-        log.info("Activating trainee with id {}", id);
-        Trainee foundTrainee = traineeDao.getById(id).orElseThrow(() -> {
-            log.error("Trainee with id {} not found.", id);
-            return new TraineeNotFoundException(id);
+    public void activate(String username) {
+        log.info("Activating trainee with username {}", username);
+        Trainee foundTrainee = traineeDao.getByUsername(username).orElseThrow(() -> {
+            log.error("Trainee with username {} not found.", username);
+            return new TraineeNotFoundException(username);
         });
         if (foundTrainee.isActive()) {
             log.debug("Trainee already is activated");
@@ -135,11 +120,11 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public void deactivate(Long id) {
-        log.info("Deactivating trainee with id {}", id);
-        Trainee foundTrainee = traineeDao.getById(id).orElseThrow(() -> {
-            log.error("Trainee with id {} not found.", id);
-            return new TraineeNotFoundException(id);
+    public void deactivate(String username) {
+        log.info("Deactivating trainee with username {}", username);
+        Trainee foundTrainee = traineeDao.getByUsername(username).orElseThrow(() -> {
+            log.error("Trainee with username {} not found.", username);
+            return new TraineeNotFoundException(username);
         });
         if (!foundTrainee.isActive()) {
             log.debug("Trainee already is deactivated");
@@ -151,7 +136,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     private String getUsername(String firstName, String lastName) {
         String username = firstName + "." + lastName;
-        if (traineeDao.getByFirstNameAndLastName(firstName, lastName).isPresent()) {
+        if (userDao.getByFirstNameAndLastName(firstName, lastName).isPresent()) {
             return username + "_" + System.currentTimeMillis();
         }
         return username;

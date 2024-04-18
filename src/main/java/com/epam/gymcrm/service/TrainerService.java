@@ -1,17 +1,14 @@
 package com.epam.gymcrm.service;
 
-import com.epam.gymcrm.model.Trainer;
-
-import java.util.List;
+import com.epam.gymcrm.dto.user.UserCredentialsDto;
+import com.epam.gymcrm.dto.trainer.TrainerForUpdateRequestDto;
+import com.epam.gymcrm.dto.trainer.TrainerRequestDto;
+import com.epam.gymcrm.dto.trainer.TrainerResponseDto;
 
 public interface TrainerService {
-    Trainer create(Trainer trainer);
-    List<Trainer> getAll();
-    Trainer getById(Long id);
-    Trainer getByUsername(String username);
-    boolean isUsernameAndPasswordValid(String username, String password);
-    Trainer update(Long id, Trainer trainer);
-    void updatePassword(Long id, String newPassword);
-    void activate(Long id);
-    void deactivate(Long id);
+    UserCredentialsDto create(TrainerRequestDto trainerRequestDto);
+    TrainerResponseDto getByUsername(String username);
+    TrainerResponseDto update(String username, TrainerForUpdateRequestDto updateTrainerRequestDto);
+    void activate(String username);
+    void deactivate(String username);
 }
