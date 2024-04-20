@@ -53,7 +53,7 @@ You can see all possible endpoints with correct
 documentation on `/swagger-ui.html` endpoint or if you prefer JSON format use `/v3/api-docs` endpoint
 
 To check health indicators of application use `/actuator/health` endpoint.
-Also, you can chack metrics of application on `/actuator/prometheus` endpoint.
+Also, you can check metrics of application on `/actuator/prometheus` endpoint or in Prometheus server (`localhost:9090`).
 
 
 
