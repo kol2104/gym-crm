@@ -26,7 +26,7 @@ public class TraceRequestAspect {
             log.info("Trace request completed successfully");
             return result;
         } catch (Exception e) {
-            log.error("Trace request failed. Trace id: {}", traceId, e);
+            log.error("Trace request failed. Trace id: {}", traceId);
             throw e;
         }
     }
