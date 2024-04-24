@@ -1,13 +1,11 @@
 package com.epam.gymcrm.controller;
 
 import com.epam.gymcrm.aspect.annotation.TraceRequest;
-import com.epam.gymcrm.auth.annotation.Authenticated;
 import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.dto.trainer.TrainerForUpdateRequestDto;
 import com.epam.gymcrm.dto.trainer.TrainerRequestDto;
 import com.epam.gymcrm.dto.trainer.TrainerResponseDto;
 import com.epam.gymcrm.exception.model.ExceptionResponse;
-import com.epam.gymcrm.model.Role;
 import com.epam.gymcrm.service.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,10 +43,8 @@ public class TrainerController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Get trainer profile", description = "Get trainer profile with specified username")
     @GetMapping("/{username}")
-    @Authenticated(roles = {Role.TRAINER})
     @TraceRequest
-    public TrainerResponseDto getTrainerProfile(@PathVariable("username") String username,
-                                                @RequestHeader(name = "Authorization", required = false) String token) {
+    public TrainerResponseDto getTrainerProfile(@PathVariable("username") String username) {
         log.info("Start process of getting trainer with username '{}'", username);
         return trainerService.getByUsername(username);
     }
@@ -76,11 +71,9 @@ public class TrainerController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Update trainer", description = "Endpoint to update trainer profile")
     @PutMapping
-    @Authenticated(roles = {Role.TRAINER})
     @TraceRequest
     public TrainerResponseDto updateTrainerProfile(
-            @RequestBody @Valid TrainerForUpdateRequestDto updateTrainerRequestDto,
-            @RequestHeader(name = "Authorization", required = false) String token) {
+            @RequestBody @Valid TrainerForUpdateRequestDto updateTrainerRequestDto) {
         log.info("Start process of updating trainer with username '{}'", updateTrainerRequestDto.username());
         return trainerService.update(updateTrainerRequestDto.username(), updateTrainerRequestDto);
     }
@@ -94,11 +87,9 @@ public class TrainerController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Update trainer status", description = "Endpoint to update trainer status by username")
     @PatchMapping("/{username}/status")
-    @Authenticated(roles = {Role.TRAINER})
     @TraceRequest
     public void updateTrainerStatus(@PathVariable("username") String username,
-                                    @RequestParam("active") boolean isActive,
-                                    @RequestHeader(name = "Authorization", required = false) String token) {
+                                    @RequestParam("active") boolean isActive) {
         log.info("Start process of updating status of trainer with username '{}'", username);
         if (isActive) {
             trainerService.activate(username);
