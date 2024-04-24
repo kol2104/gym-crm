@@ -19,16 +19,15 @@ public class UserDaoDatabase implements UserDao {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<User> getByUsernameAndPassword(String username, String password) {
+    public Optional<User> getByUsername(String username) {
         Optional<User> foundUser = entityManager
-                .createQuery("from User t where t.username = :username and t.password = :password", User.class)
+                .createQuery("from User t where t.username = :username", User.class)
                 .setParameter("username", username)
-                .setParameter("password", password)
                 .getResultStream().findFirst();
         if (foundUser.isPresent()) {
-            log.debug("Found user by username '{}' and password '{}'", username, password);
+            log.debug("Found user by username '{}'", username);
         } else {
-                log.debug("User with username '{}' and password '{}'.", username, password);
+            log.debug("User with username '{}'.", username);
         }
         return foundUser;
     }
