@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -43,6 +44,8 @@ class TrainerServiceImplTest {
     private TrainingTypeDao trainingTypeDao;
     @Mock
     private TrainerMapper trainerMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private TrainerServiceImpl trainerService;
@@ -60,6 +63,7 @@ class TrainerServiceImplTest {
         when(trainerDao.create(trainer)).thenReturn(trainer);
         when(userDao.getByFirstNameAndLastName(null, null)).thenReturn(Optional.empty());
         when(trainingTypeDao.getById(1L)).thenReturn(Optional.of(trainingType));
+        when(passwordEncoder.encode(any())).thenReturn(null);
 
         // When
         UserCredentialsDto createdTraineeCredentials = trainerService.create(trainerRequestDto);
@@ -71,6 +75,7 @@ class TrainerServiceImplTest {
         verify(trainerDao, times(1)).create(trainer);
         verify(userDao).getByFirstNameAndLastName(null, null);
         verify(trainingTypeDao).getById(1L);
+        verify(passwordEncoder).encode(any());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.epam.gymcrm.controller;
 
+import com.epam.gymcrm.common.Constants;
 import com.epam.gymcrm.controller.handler.GymCrmExceptionHandler;
 import com.epam.gymcrm.dto.TokenDto;
 import com.epam.gymcrm.dto.user.UserCredentialsDto;
@@ -53,7 +54,7 @@ class AuthenticationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(credentialsDto)))
                 .andExpect(status().isOk())
-                .andExpect(header().exists("Authorization"));
+                .andExpect(header().exists(Constants.AUTH_TOKEN.getName()));
     }
 
     @Test

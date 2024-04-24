@@ -131,60 +131,6 @@ class TraineeDaoDatabaseTest {
     }
 
     @Test
-    void getByUsernameAndPassword_ReturnsTrainee_WhenTraineeExists() {
-        // Test data
-        String username = "testUser";
-        String password = "testPassword";
-        Trainee trainee = new Trainee();
-        trainee.setUsername(username);
-        trainee.setPassword(password);
-
-        // Mock EntityManager.createQuery() and TypedQuery.getResultStream().findFirst()
-        when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.setParameter("username", username)).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.setParameter("password", password)).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.getResultStream()).thenReturn(java.util.stream.Stream.of(trainee));
-
-        // Perform the method call
-        Optional<Trainee> result = traineeDao.getByUsernameAndPassword(username, password);
-
-        // Verify EntityManager.createQuery() and TypedQuery.getResultStream().findFirst() are called
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Trainee.class));
-        verify(typedQueryTrainee, times(1)).setParameter("username", username);
-        verify(typedQueryTrainee, times(1)).setParameter("password", password);
-        verify(typedQueryTrainee, times(1)).getResultStream();
-
-        // Verify that the trainee is returned
-        assertTrue(result.isPresent());
-        assertEquals(trainee, result.get());
-    }
-
-    @Test
-    void getByUsernameAndPassword_ReturnsEmptyOptional_WhenTraineeDoesNotExist() {
-        // Test data
-        String username = "nonExistentUser";
-        String password = "nonExistentPassword";
-
-        // Mock EntityManager.createQuery() and TypedQuery.getResultStream().findFirst()
-        when(entityManager.createQuery(anyString(), eq(Trainee.class))).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.setParameter("username", username)).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.setParameter("password", password)).thenReturn(typedQueryTrainee);
-        when(typedQueryTrainee.getResultStream()).thenReturn(java.util.stream.Stream.empty());
-
-        // Perform the method call
-        Optional<Trainee> result = traineeDao.getByUsernameAndPassword(username, password);
-
-        // Verify EntityManager.createQuery() and TypedQuery.getResultStream().findFirst() are called
-        verify(entityManager, times(1)).createQuery(anyString(), eq(Trainee.class));
-        verify(typedQueryTrainee, times(1)).setParameter("username", username);
-        verify(typedQueryTrainee, times(1)).setParameter("password", password);
-        verify(typedQueryTrainee, times(1)).getResultStream();
-
-        // Verify that the result is an empty Optional
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void update_ReturnsUpdatedTrainee_WhenTraineeExists() {
         // Test data
         Trainee trainee = new Trainee();
