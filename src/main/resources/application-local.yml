@@ -6,11 +6,14 @@ spring:
   jpa:
     show_sql: true
   liquibase:
-    change-log: changelog/changelog.xml
+    change-log: db/changelog/changelog.xml
 
 jwt:
   key: secret_key
   exp: 3600
+
+cors:
+    urls: http://localhost:8081
 
 management:
   metrics:

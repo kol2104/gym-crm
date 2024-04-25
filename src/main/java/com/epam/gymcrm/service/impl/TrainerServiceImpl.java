@@ -15,6 +15,7 @@ import com.epam.gymcrm.service.TrainerService;
 import com.epam.gymcrm.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -26,19 +27,23 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerDao trainerDao;
     private final TrainerMapper trainerMapper;
     private final TrainingTypeDao trainingTypeDao;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserCredentialsDto create(TrainerRequestDto trainerRequestDto) {
         Trainer trainer = trainerMapper.dtoToModel(trainerRequestDto);
         log.info("Saving trainer: {}", trainer);
         trainer.setUsername(getUsername(trainer.getFirstName(), trainer.getLastName()));
-        trainer.setPassword(PasswordUtil.getRandomPassword(10));
+        String password = PasswordUtil.getRandomPassword(10);
+        trainer.setPassword(passwordEncoder.encode(password));
         trainer.setActive(true);
         trainer.setSpecialization(trainingTypeDao.getById(trainer.getSpecialization().getId()).orElseThrow(() -> {
             log.error("Training type with id {} not found.", trainer.getSpecialization().getId());
             return new TrainingTypeNotFoundException(trainer.getSpecialization().getId());
         }));
-        return trainerMapper.modelToCredentialsDto(trainerDao.create(trainer));
+        Trainer savedTrainer = trainerDao.create(trainer);
+        savedTrainer.setPassword(password);
+        return trainerMapper.modelToCredentialsDto(savedTrainer);
     }
 
     @Override

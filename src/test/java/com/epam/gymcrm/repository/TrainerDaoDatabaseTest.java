@@ -136,59 +136,6 @@ class TrainerDaoDatabaseTest {
     }
 
     @Test
-    void getByUsernameAndPassword_ReturnsTrainer_WhenTrainerExists() {
-        // Test data
-        String username = "testUser";
-        String password = "testPassword";
-        Trainer trainer = new Trainer();
-
-        // Mock Query.setParameter() and Query.getResultStream().findFirst() to return a non-empty Optional
-        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.setParameter(anyString(), any())).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.getResultStream()).thenReturn(Stream.of(trainer)); // Adjusted stubbing
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getByUsernameAndPassword(username, password);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.username = :username and t.password = :password", Trainer.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainer, times(1)).setParameter("username", username);
-        verify(typedQueryTrainer, times(1)).setParameter("password", password);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainer, times(1)).getResultStream();
-
-        // Assert that the result is not empty
-        assertTrue(result.isPresent());
-    }
-
-    @Test
-    void getByUsernameAndPassword_ReturnsEmptyOptional_WhenTrainerDoesNotExist() {
-        // Test data
-        String username = "testUser";
-        String password = "testPassword";
-
-        // Mock Query.setParameter() and Query.getResultStream().findFirst() to return an empty Optional
-        when(entityManager.createQuery(anyString(), eq(Trainer.class))).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.setParameter(anyString(), any())).thenReturn(typedQueryTrainer);
-        when(typedQueryTrainer.getResultStream()).thenReturn(Stream.empty()); // Adjusted stubbing
-
-        // Perform the method call
-        Optional<Trainer> result = trainerDao.getByUsernameAndPassword(username, password);
-
-        // Verify that EntityManager.createQuery() is called with the correct query and class
-        verify(entityManager, times(1)).createQuery("from Trainer t where t.username = :username and t.password = :password", Trainer.class);
-        // Verify that Query.setParameter() is called with the correct parameters
-        verify(typedQueryTrainer, times(1)).setParameter("username", username);
-        verify(typedQueryTrainer, times(1)).setParameter("password", password);
-        // Verify that Query.getResultStream() is called
-        verify(typedQueryTrainer, times(1)).getResultStream();
-
-        // Assert that the result is empty
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void update_ReturnsUpdatedTrainer_WhenTrainerExists() {
         // Test data
         Trainer trainer = new Trainer();

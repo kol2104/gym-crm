@@ -48,16 +48,14 @@ class UserDaoDatabaseTest {
         // Mock EntityManager.createQuery() and TypedQuery.getResultStream().findFirst()
         when(entityManager.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
         when(typedQueryUser.setParameter("username", username)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("password", password)).thenReturn(typedQueryUser);
         when(typedQueryUser.getResultStream()).thenReturn(java.util.stream.Stream.of(user));
 
         // Perform the method call
-        Optional<User> result = userDao.getByUsernameAndPassword(username, password);
+        Optional<User> result = userDao.getByUsername(username);
 
         // Verify EntityManager.createQuery() and TypedQuery.getResultStream().findFirst() are called
         verify(entityManager, times(1)).createQuery(anyString(), eq(User.class));
         verify(typedQueryUser, times(1)).setParameter("username", username);
-        verify(typedQueryUser, times(1)).setParameter("password", password);
         verify(typedQueryUser, times(1)).getResultStream();
 
         // Verify that the user is returned
@@ -74,16 +72,14 @@ class UserDaoDatabaseTest {
         // Mock EntityManager.createQuery() and TypedQuery.getResultStream().findFirst()
         when(entityManager.createQuery(anyString(), eq(User.class))).thenReturn(typedQueryUser);
         when(typedQueryUser.setParameter("username", username)).thenReturn(typedQueryUser);
-        when(typedQueryUser.setParameter("password", password)).thenReturn(typedQueryUser);
         when(typedQueryUser.getResultStream()).thenReturn(java.util.stream.Stream.empty());
 
         // Perform the method call
-        Optional<User> result = userDao.getByUsernameAndPassword(username, password);
+        Optional<User> result = userDao.getByUsername(username);
 
         // Verify EntityManager.createQuery() and TypedQuery.getResultStream().findFirst() are called
         verify(entityManager, times(1)).createQuery(anyString(), eq(User.class));
         verify(typedQueryUser, times(1)).setParameter("username", username);
-        verify(typedQueryUser, times(1)).setParameter("password", password);
         verify(typedQueryUser, times(1)).getResultStream();
 
         // Verify that the result is an empty Optional

@@ -16,13 +16,14 @@ public class DatabaseHealthIndicator implements HealthIndicator {
 
     @Override
     public Health health() {
+        final String DETAIL_NAME = "database";
         try (Connection connection = dataSource.getConnection()) {
             if (connection.isValid(1)) {
-                return Health.up().withDetail("database", "Available").build();
+                return Health.up().withDetail(DETAIL_NAME, "Available").build();
             }
         } catch (Exception e) {
-            return Health.down(e).withDetail("database", "Not available").build();
+            return Health.down(e).withDetail(DETAIL_NAME, "Not available").build();
         }
-        return Health.down().withDetail("database", "Not available").build();
+        return Health.down().withDetail(DETAIL_NAME, "Not available").build();
     }
 }

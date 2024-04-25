@@ -52,22 +52,6 @@ public class TrainerDaoDatabase implements TrainerDao {
         return foundTrainer;
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Trainer> getByUsernameAndPassword(String username, String password) {
-        Optional<Trainer> foundTrainer = entityManager
-                .createQuery("from Trainer t where t.username = :username and t.password = :password", Trainer.class)
-                .setParameter("username", username)
-                .setParameter("password", password)
-                .getResultStream().findFirst();
-        if (foundTrainer.isPresent()) {
-            log.debug("Found trainer by username '{}' and password '{}'", username, password);
-        } else {
-            log.debug("Trainer with username '{}' and password '{}' not found.", username, password);
-        }
-        return foundTrainer;
-    }
-
     @Transactional
     @Override
     public Trainer update(Trainer trainer) {

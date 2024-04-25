@@ -1,7 +1,6 @@
 package com.epam.gymcrm.controller;
 
 import com.epam.gymcrm.aspect.annotation.TraceRequest;
-import com.epam.gymcrm.auth.annotation.Authenticated;
 import com.epam.gymcrm.dto.trainee.TraineeForUpdateRequestDto;
 import com.epam.gymcrm.dto.trainee.TraineeRequestDto;
 import com.epam.gymcrm.dto.trainee.TraineeResponseDto;
@@ -9,7 +8,6 @@ import com.epam.gymcrm.dto.trainer.PlainTrainerResponseDto;
 import com.epam.gymcrm.dto.trainer.TrainerUsernameDto;
 import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.exception.model.ExceptionResponse;
-import com.epam.gymcrm.model.Role;
 import com.epam.gymcrm.service.TraineeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,10 +48,8 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Get trainee profile", description = "Get trainee profile with specified username")
     @GetMapping("/{username}")
-    @Authenticated(roles = {Role.TRAINEE})
     @TraceRequest
-    public TraineeResponseDto getTraineeProfile(@PathVariable("username") String username,
-                                                @RequestHeader(name = "Authorization", required = false) String token) {
+    public TraineeResponseDto getTraineeProfile(@PathVariable("username") String username) {
         log.info("Start process of getting trainee with username '{}'", username);
         return traineeService.getByUsername(username);
     }
@@ -81,11 +76,9 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Update trainee", description = "Endpoint to update trainee profile")
     @PutMapping
-    @Authenticated(roles = {Role.TRAINEE})
     @TraceRequest
     public TraineeResponseDto updateTraineeProfile(
-            @RequestBody @Valid TraineeForUpdateRequestDto updateTraineeRequestDto,
-            @RequestHeader(name = "Authorization", required = false) String token) {
+            @RequestBody @Valid TraineeForUpdateRequestDto updateTraineeRequestDto) {
         log.info("Start process of updating trainee with username '{}'", updateTraineeRequestDto.username());
         return traineeService.update(updateTraineeRequestDto.username(), updateTraineeRequestDto);
     }
@@ -97,10 +90,8 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Delete trainee", description = "Endpoint to delete trainee")
     @DeleteMapping("/{username}")
-    @Authenticated(roles = {Role.TRAINEE})
     @TraceRequest
-    public void deleteTraineeProfile(@PathVariable("username") String username,
-                                     @RequestHeader(name = "Authorization", required = false) String token) {
+    public void deleteTraineeProfile(@PathVariable("username") String username) {
         log.info("Start process of deleting trainee with username '{}'", username);
         traineeService.deleteByUsername(username);
     }
@@ -114,10 +105,8 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Get unassigned trainers list", description = "Endpoint to get unassigned to trainee trainers list")
     @GetMapping("/{username}/unassigned-trainers")
-    @Authenticated(roles = {Role.TRAINEE, Role.TRAINER})
     @TraceRequest
-    public List<PlainTrainerResponseDto> getUnassignedTrainers(@PathVariable("username") String username,
-                                                               @RequestHeader(name = "Authorization", required = false) String token) {
+    public List<PlainTrainerResponseDto> getUnassignedTrainers(@PathVariable("username") String username) {
         log.info("Start process of getting unassigned trainers with trainee username '{}'", username);
         return traineeService.getUnassignedOnTraineeTrainerListByUsername(username);
     }
@@ -133,11 +122,9 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Update trainer list for trainee", description = "Endpoint to update trainer list for trainee by username")
     @PutMapping("/{username}/trainer-list")
-    @Authenticated(roles = {Role.TRAINEE, Role.TRAINER})
     @TraceRequest
     public void updateTrainerList(@PathVariable("username") String username,
-                                  @RequestBody @Valid List<TrainerUsernameDto> trainerUsernameDtos,
-                                  @RequestHeader(name = "Authorization", required = false) String token) {
+                                  @RequestBody @Valid List<TrainerUsernameDto> trainerUsernameDtos) {
         log.info("Start process of updating trainer list for trainee with username '{}'", username);
         traineeService.updateTrainersList(username, trainerUsernameDtos);
     }
@@ -151,11 +138,9 @@ public class TraineeController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Update trainee status", description = "Endpoint to update trainee status by username")
     @PatchMapping("/{username}/status")
-    @Authenticated(roles = {Role.TRAINEE})
     @TraceRequest
     public void updateTraineeStatus(@PathVariable("username") String username,
-                                    @RequestParam("active") boolean isActive,
-                                    @RequestHeader(name = "Authorization", required = false) String token) {
+                                    @RequestParam("active") boolean isActive) {
         log.info("Start process of updating status of trainee with username '{}'", username);
         if (isActive) {
             traineeService.activate(username);

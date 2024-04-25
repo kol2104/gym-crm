@@ -1,6 +1,7 @@
 package com.epam.gymcrm.controller;
 
 import com.epam.gymcrm.aspect.annotation.TraceRequest;
+import com.epam.gymcrm.common.Constants;
 import com.epam.gymcrm.dto.TokenDto;
 import com.epam.gymcrm.dto.user.UserCredentialsDto;
 import com.epam.gymcrm.exception.model.ExceptionResponse;
@@ -39,7 +40,7 @@ public class AuthenticationController {
     public TokenDto login(HttpServletResponse response, @RequestBody @Valid UserCredentialsDto userCredentialsDto) {
         log.info("Start process of login with username '{}' and password", userCredentialsDto.username());
         TokenDto tokenDto = userService.authenticateUser(userCredentialsDto);
-        response.addHeader("Authorization", tokenDto.token());
+        response.addHeader(Constants.AUTH_TOKEN.getName(), tokenDto.token());
         return tokenDto;
     }
 }

@@ -18,6 +18,7 @@ import com.epam.gymcrm.service.TraineeService;
 import com.epam.gymcrm.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,15 +33,19 @@ public class TraineeServiceImpl implements TraineeService {
     private final UserDao userDao;
     private final TraineeMapper traineeMapper;
     private final TrainerMapper trainerMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserCredentialsDto create(TraineeRequestDto traineeRequestDto) {
         Trainee trainee = traineeMapper.dtoToModel(traineeRequestDto);
         log.info("Saving trainee: {}", trainee);
         trainee.setUsername(getUsername(trainee.getFirstName(), trainee.getLastName()));
-        trainee.setPassword(PasswordUtil.getRandomPassword(10));
+        String password = PasswordUtil.getRandomPassword(10);
+        trainee.setPassword(passwordEncoder.encode(password));
         trainee.setActive(true);
-        return traineeMapper.modelToCredentialsDto(traineeDao.create(trainee));
+        Trainee savedTrainee = traineeDao.create(trainee);
+        savedTrainee.setPassword(password);
+        return traineeMapper.modelToCredentialsDto(savedTrainee);
     }
 
     @Override

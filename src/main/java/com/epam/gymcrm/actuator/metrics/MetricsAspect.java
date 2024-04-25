@@ -19,7 +19,7 @@ public class MetricsAspect {
 
     private final MeterRegistry meterRegistry;
 
-    @Pointcut("execution(* com.epam.gymcrm..*(..))")
+    @Pointcut("execution(* com.epam.gymcrm..*(..)) && !execution(* com.epam.gymcrm.auth..*(..))")
     public void monitor() {}
 
     @Before("monitor()")

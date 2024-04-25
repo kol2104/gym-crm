@@ -1,9 +1,7 @@
 package com.epam.gymcrm.controller;
 
-import com.epam.gymcrm.auth.annotation.Authenticated;
 import com.epam.gymcrm.dto.user.UserNewPasswordRequestDto;
 import com.epam.gymcrm.exception.model.ExceptionResponse;
-import com.epam.gymcrm.model.Role;
 import com.epam.gymcrm.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/users")
@@ -39,10 +38,9 @@ public class UserController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponse.class)))
     @Operation(summary = "Change password", description = "Endpoint to change password")
     @PutMapping("/password")
-    @Authenticated(roles = {Role.TRAINEE, Role.TRAINER})
     public void changePassword(@RequestBody @Valid UserNewPasswordRequestDto userNewPasswordRequestDto,
-                               @RequestHeader(name = "Authorization", required = false) String token) {
+                               Principal principal) {
         log.info("Start process of changing password for user");
-        userService.updatePassword(userNewPasswordRequestDto, token);
+        userService.updatePassword(userNewPasswordRequestDto, principal.getName());
     }
 }

@@ -55,22 +55,6 @@ public class TraineeDaoDatabase implements TraineeDao {
         return foundTrainee;
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<Trainee> getByUsernameAndPassword(String username, String password) {
-        Optional<Trainee> foundTrainee = entityManager
-                .createQuery("from Trainee t where t.username = :username and t.password = :password", Trainee.class)
-                .setParameter("username", username)
-                .setParameter("password", password)
-                .getResultStream().findFirst();
-        if (foundTrainee.isPresent()) {
-            log.debug("Found trainee by username '{}' and password '{}'", username, password);
-        } else {
-            log.debug("Trainee with username '{}' and password '{}'.", username, password);
-        }
-        return foundTrainee;
-    }
-
     @Transactional
     @Override
     public Trainee update(Trainee trainee) {
