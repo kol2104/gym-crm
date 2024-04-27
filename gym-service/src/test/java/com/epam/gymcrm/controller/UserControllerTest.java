@@ -45,7 +45,6 @@ class UserControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-
     private AutoCloseable mocksClose;
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
