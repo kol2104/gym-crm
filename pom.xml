@@ -9,9 +9,13 @@
     <artifactId>gym-crm</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
     <!-- sub modules -->
     <modules>
         <module>gym-service</module>
         <module>trainings-report-service</module>
+        <module>eureka-server</module>
     </modules>
 </project>
