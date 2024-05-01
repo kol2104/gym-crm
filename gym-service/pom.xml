@@ -12,8 +12,7 @@
 	<groupId>com.epam</groupId>
 	<artifactId>gym-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>gym-crm</name>
+    <name>gym-service</name>
 	<description>Gym CRM system</description>
     <properties>
 		<java.version>17</java.version>
@@ -25,6 +24,9 @@
 		<mysql.version>8.3.0</mysql.version>
 		<hibernate.version>6.4.4.Final</hibernate.version>
 		<springdoc.version>2.5.0</springdoc.version>
+        <eureka.version>4.1.1</eureka.version>
+        <feign.version>4.1.0</feign.version>
+        <circuitbreaker.version>3.1.1</circuitbreaker.version>
 	</properties>
 	<dependencies>
 		<!-- Spring boot starters -->
@@ -115,6 +117,24 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>${springdoc.version}</version>
 		</dependency>
+        <!-- Eureka client -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>${eureka.version}</version>
+        </dependency>
+        <!-- Feign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${feign.version}</version>
+        </dependency>
+        <!-- Circuit breaker -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+            <version>${circuitbreaker.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>
