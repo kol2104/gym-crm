@@ -1,6 +1,7 @@
 package com.epam.gymcrm.dao.impl;
 
 import com.epam.gymcrm.dao.TrainingDao;
+import com.epam.gymcrm.model.Trainer;
 import com.epam.gymcrm.model.Training;
 import com.epam.gymcrm.model.TrainingCriteria;
 import jakarta.persistence.EntityManager;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +72,19 @@ public class TrainingDaoDatabase implements TrainingDao {
         List<Training> trainings = entityManager.createQuery(query).getResultList();
         log.debug("Found {} trainings", trainings.size());
         return trainings;
+    }
+
+    @Transactional
+    @Override
+    public void delete(Long id) {
+        int deletedRows = entityManager.createQuery("delete from Training t where t.id = :id")
+            .setParameter("id", id)
+            .executeUpdate();
+        if (deletedRows != 0) {
+            log.info("Training with id '{}' deleted successfully", id);
+        } else {
+            log.debug("Training with id {} not found. Unable to delete.", id);
+        }
     }
 
     private Predicate buildPredicate(CriteriaBuilder criteriaBuilder, Root<Training> root,

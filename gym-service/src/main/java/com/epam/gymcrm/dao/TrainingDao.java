@@ -12,4 +12,5 @@ public interface TrainingDao {
     List<Training> getAll();
     Optional<Training> getById(Long id);
     List<Training> getTrainingsByCriteria(Map<TrainingCriteria, String> criteria);
+    void delete(Long id);
 }
