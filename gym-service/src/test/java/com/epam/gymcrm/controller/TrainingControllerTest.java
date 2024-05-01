@@ -2,6 +2,7 @@ package com.epam.gymcrm.controller;
 
 import com.epam.gymcrm.controller.handler.GymCrmExceptionHandler;
 import com.epam.gymcrm.dto.training.TrainingDto;
+import com.epam.gymcrm.dto.training.TrainingToDeleteRequestDto;
 import com.epam.gymcrm.service.TrainingService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -92,5 +94,21 @@ class TrainingControllerTest {
                 .andExpect(status().isOk());
 
         verify(trainingService).create(any(TrainingDto.class));
+    }
+
+    @Test
+    void testDeleteTraining() throws Exception {
+        mockMvc.perform(delete("/api/trainings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    "{" +
+                        "\"trainingDate\": \"2024-01-01 00:00:00\"," +
+                        "\"traineeUsername\": \"name\"," +
+                        "\"trainerUsername\": \"name\"" +
+                    "}"
+                ))
+            .andExpect(status().isOk());
+
+        verify(trainingService).delete(any(TrainingToDeleteRequestDto.class));
     }
 }

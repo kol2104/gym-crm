@@ -4,6 +4,7 @@ import com.epam.gymcrm.dao.impl.TrainingDaoDatabase;
 import com.epam.gymcrm.model.Training;
 import com.epam.gymcrm.model.TrainingCriteria;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -46,6 +47,8 @@ class TrainingDaoDatabaseTest {
     private Predicate predicate;
     @Mock
     private TypedQuery<Training> typedQueryTraining;
+    @Mock
+    private Query query;
     @InjectMocks
     private TrainingDaoDatabase trainingDao;
 
@@ -148,5 +151,20 @@ class TrainingDaoDatabaseTest {
         verify(typedQueryTraining).getResultList();
 
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void delete_DeletesTraining() {
+        long id = 1L;
+
+        when(entityManager.createQuery(anyString())).thenReturn(query);
+        when(query.setParameter(anyString(), any())).thenReturn(query);
+        when(query.executeUpdate()).thenReturn(1);
+
+        trainingDao.delete(id);
+
+        verify(entityManager, times(1)).createQuery("delete from Training t where t.id = :id");
+        verify(query, times(1)).setParameter("id", id);
+        verify(query, times(1)).executeUpdate();
     }
 }
