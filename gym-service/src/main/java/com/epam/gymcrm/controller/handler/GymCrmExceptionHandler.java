@@ -5,6 +5,7 @@ import com.epam.gymcrm.exception.AuthorizationException;
 import com.epam.gymcrm.exception.TooManyLoginAttemptsException;
 import com.epam.gymcrm.exception.TraineeNotFoundException;
 import com.epam.gymcrm.exception.TrainerNotFoundException;
+import com.epam.gymcrm.exception.TrainingDateConstraintViolation;
 import com.epam.gymcrm.exception.TrainingNotFoundException;
 import com.epam.gymcrm.exception.TrainingTypeNotFoundException;
 import com.epam.gymcrm.exception.UserNotFoundException;
@@ -38,7 +39,7 @@ public class GymCrmExceptionHandler {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, JsonMappingException.class,
-            TooManyLoginAttemptsException.class})
+            TooManyLoginAttemptsException.class, TrainingDateConstraintViolation.class})
     public ResponseEntity<ExceptionResponse> exceptionHandlerBadRequest(Exception exception) {
         ExceptionResponse response = buildExceptionResponse(exception, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
