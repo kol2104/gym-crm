@@ -10,12 +10,13 @@ spring:
         show_sql: true
     liquibase:
         change-log: db/changelog/changelog.xml
-    cloud:
-        openfeign:
-            circuitbreaker:
-                enabled: true
-                alphanumeric-ids:
-                    enabled: true
+    activemq:
+        broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+        in-memory: true
+        topic-name: trainer.workload
+        jms:
+            pool:
+                enabled: false
 
 jwt:
     key: secret_key
@@ -40,19 +41,3 @@ management:
             enabled: true
         prometheus:
             enabled: true
-
-eureka:
-    client:
-        register-with-eureka: true
-        service-url:
-            defaultZone: http://localhost:8761/eureka
-
-resilience4j:
-    circuitbreaker:
-        instances:
-            TrainingsReportServiceupdateTrainerWorkload:
-                minimumNumberOfCalls: 10
-    timelimiter:
-        instances:
-            TrainingsReportServiceupdateTrainerWorkload:
-                timeoutDuration: 10s

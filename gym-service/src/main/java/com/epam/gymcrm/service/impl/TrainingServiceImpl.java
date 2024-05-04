@@ -14,7 +14,7 @@ import com.epam.gymcrm.exception.TrainingTypeNotFoundException;
 import com.epam.gymcrm.mapper.TrainingMapper;
 import com.epam.gymcrm.model.Training;
 import com.epam.gymcrm.model.TrainingCriteria;
-import com.epam.gymcrm.rest.TrainingsReportService;
+import com.epam.gymcrm.message.TrainingsReportService;
 import com.epam.gymcrm.service.TrainingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
