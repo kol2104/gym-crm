@@ -1,0 +1,28 @@
+server:
+    port: 8082
+
+spring:
+    data:
+        mongodb:
+            database: mongo_db
+    mongodb:
+        embedded:
+            version: 4.12.6
+    activemq:
+        broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+        in-memory: true
+        client-id: consumer1
+        topic-name: trainer.workload
+        jms:
+            pool:
+                enabled: false
+
+de:
+    flapdoodle:
+        mongodb:
+            embedded:
+                version: 7.3.0
+
+jwt:
+    key: secret_key
+    exp: 3600

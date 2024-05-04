@@ -1,0 +1,26 @@
+server:
+    port: 8082
+
+spring:
+    data:
+        mongodb:
+            database: mongo_db
+    mongodb:
+        embedded:
+            version: 4.12.6
+    activemq:
+        broker-url: tcp://localhost:61616
+        user: admin
+        password: admin
+        client-id: consumer1
+        topic-name: trainer.workload
+
+de:
+    flapdoodle:
+        mongodb:
+            embedded:
+                version: 7.3.0
+
+jwt:
+    key: secret_key
+    exp: 3600
