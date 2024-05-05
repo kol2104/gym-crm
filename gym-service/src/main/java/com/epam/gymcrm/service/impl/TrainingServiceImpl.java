@@ -19,6 +19,7 @@ import com.epam.gymcrm.service.TrainingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.EnumMap;
@@ -39,6 +40,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Transactional
     @Override
     public void create(TrainingDto trainingDto) {
         Training training = trainingMapper.dtoToModel(trainingDto);
@@ -98,6 +100,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public void delete(TrainingToDeleteRequestDto trainingToDeleteRequestDto) {
         log.info("Delete trainings by trainings date, trainer and trainee usernames");
