@@ -2,12 +2,12 @@ package com.epam.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Map;
+import java.util.List;
 
 public record YearDto(
-    @Schema(description = "Year")
+    @Schema(description = "Year number")
     Integer yearNumber,
-    @Schema(description = "Summary workload by months")
-    Map<String, Long> summaryDurationByMonths
+    @Schema(description = "Months")
+    List<MonthDto> months
 ) {
 }
