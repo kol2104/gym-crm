@@ -3,20 +3,18 @@ package com.epam.service.impl;
 import com.epam.dto.TrainerWorkloadRequestDto;
 import com.epam.dto.TrainerWorkloadResponseDto;
 import com.epam.mapper.TrainerWorkloadMapper;
+import com.epam.model.Month;
 import com.epam.model.TrainerWorkload;
 import com.epam.model.Year;
+import com.epam.repository.TrainerWorkloadRepository;
 import com.epam.service.TrainerWorkloadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,55 +22,73 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerWorkloadServiceMongoImpl implements TrainerWorkloadService {
 
-    private final MongoTemplate mongoTemplate;
     private final TrainerWorkloadMapper trainerWorkloadMapper;
+    private final TrainerWorkloadRepository trainerWorkloadRepository;
 
     @Transactional
     @Override
     public void updateTrainerWorkload(TrainerWorkloadRequestDto trainerWorkloadRequestDto) {
-        LocalDateTime trainingDate = trainerWorkloadRequestDto.trainingDate();
-        int yearNumber = trainingDate.getYear();
-        String monthName = trainingDate.getMonth().name();
+        String username = trainerWorkloadRequestDto.username();
         boolean isSavingAction = trainerWorkloadRequestDto.action();
 
-        TrainerWorkload trainerWorkload = mongoTemplate.findById(trainerWorkloadRequestDto.username(), TrainerWorkload.class);
+        Optional<TrainerWorkload> trainerWorkloadOptional = trainerWorkloadRepository.getByUsername(username);
 
-
-        if (trainerWorkload == null) {
+        if (trainerWorkloadOptional.isEmpty()) {
             log.info("Update workload for new trainer");
             handleNewTrainer(trainerWorkloadRequestDto, isSavingAction);
             return;
         }
+        TrainerWorkload trainerWorkload = trainerWorkloadOptional.get();
         log.info("Update workload for exist trainer");
-        updateExistingTrainerWorkload(trainerWorkload, yearNumber, monthName, trainerWorkloadRequestDto, isSavingAction);
-        mongoTemplate.save(trainerWorkload);
+        updateExistingTrainerWorkload(trainerWorkload, trainerWorkloadRequestDto, isSavingAction);
+        trainerWorkloadRepository.persistTrainerWorkload(trainerWorkload);
     }
 
     private void handleNewTrainer(TrainerWorkloadRequestDto trainerWorkloadRequestDto, boolean isSavingAction) {
         TrainerWorkload trainerWorkload = buildNewTrainerWorkload(trainerWorkloadRequestDto, isSavingAction);
-        mongoTemplate.save(trainerWorkload);
+        trainerWorkloadRepository.persistTrainerWorkload(trainerWorkload);
     }
 
-    private void updateExistingTrainerWorkload(TrainerWorkload workload, int yearNumber,
-                                               String monthName, TrainerWorkloadRequestDto requestDto,
+    private void updateExistingTrainerWorkload(TrainerWorkload workload, TrainerWorkloadRequestDto requestDto,
                                                boolean isSavingAction) {
-        Year year = findOrCreateYear(workload.getYears(), yearNumber, isSavingAction);
-        if (year == null) {
-            return;
+        int yearNumber = requestDto.trainingDate().getYear();
+        String monthName = requestDto.trainingDate().getMonth().name();
+        if (workload.getYears() == null) {
+            workload.setYears(new ArrayList<>());
         }
+        Year year = findOrCreateYear(workload.getYears(), yearNumber);
+        if (year.getMonths() == null) {
+            year.setMonths(new ArrayList<>());
+        }
+        Month month = findOrCreateMonth(year.getMonths(), monthName);
 
-        Map<String, Long> durations = year.getSummaryDurationByMonths();
-        if (durations == null) {
-            durations = new HashMap<>();
-        }
-        updateMonthlyDuration(durations, monthName, requestDto.trainingDuration(), isSavingAction);
-        if (durations.isEmpty()) {
-            log.debug("Delete year with empty map with durations");
-            workload.getYears().remove(year);
+        updateMonthlyDuration(month, requestDto.trainingDuration(), isSavingAction);
+        if (month.getSummaryDuration() <= 0L) {
+            log.debug("Delete month with empty duration");
+            year.getMonths().remove(month);
+            if (year.getMonths().isEmpty()) {
+                log.debug("Delete year with empty months");
+                workload.getYears().remove(year);
+            }
         }
     }
 
-    private Year findOrCreateYear(List<Year> years, int yearNumber, boolean isSavingAction) {
+    private Month findOrCreateMonth(List<Month> months, String monthName) {
+        Optional<Month> monthOptional = months.stream()
+            .filter(month -> month.getName().equals(monthName))
+            .findFirst();
+
+        if (monthOptional.isPresent()) {
+            log.debug("Month found in list");
+            return monthOptional.get();
+        }
+        Month newMonth = new Month(monthName, 0L);
+        months.add(newMonth);
+        log.debug("Created new month");
+        return newMonth;
+    }
+
+    private Year findOrCreateYear(List<Year> years, int yearNumber) {
         Optional<Year> yearOptional = years.stream()
             .filter(year -> year.getYearNumber() == yearNumber)
             .findFirst();
@@ -80,52 +96,37 @@ public class TrainerWorkloadServiceMongoImpl implements TrainerWorkloadService {
         if (yearOptional.isPresent()) {
             log.debug("Year found in list");
             return yearOptional.get();
-        } else if (isSavingAction) {
-            Year newYear = Year.builder()
-                .yearNumber(yearNumber)
-                .summaryDurationByMonths(new HashMap<>())
-                .build();
-            years.add(newYear);
-            log.debug("Created new year");
-            return newYear;
         }
-        log.debug("Not necessary to create year for NOT saving action");
-        return null;
+        Year newYear = new Year(yearNumber, new ArrayList<>());
+        years.add(newYear);
+        log.debug("Created new year");
+        return newYear;
     }
 
-    private void updateMonthlyDuration(Map<String, Long> durations, String monthName, long trainingDuration, boolean isSavingAction) {
-        long currentDuration = durations.getOrDefault(monthName, 0L);
-
+    private void updateMonthlyDuration(Month month, long trainingDuration, boolean isSavingAction) {
         if (isSavingAction) {
-            durations.put(monthName, currentDuration + trainingDuration);
-            log.debug("Duration {} added to month {}", trainingDuration, monthName);
+            month.setSummaryDuration(month.getSummaryDuration() + trainingDuration);
+            log.debug("Duration {} added to month {}", trainingDuration, month.getName());
         } else {
-            long updatedDuration = currentDuration - trainingDuration;
-            if (updatedDuration > 0) {
-                durations.put(monthName, updatedDuration);
-                log.debug("Duration {} subtracted from month {}", trainingDuration, monthName);
-            } else {
-                durations.remove(monthName);
-                log.debug("Month {} deleted cause duration less or equal 0", monthName);
-            }
+            long updatedDuration = month.getSummaryDuration() - trainingDuration > 0 ?
+                month.getSummaryDuration() - trainingDuration : 0L;
+            month.setSummaryDuration(updatedDuration);
+            log.debug("Duration {} subtracted from month {}", trainingDuration, month.getName());
         }
     }
 
-    private TrainerWorkload buildNewTrainerWorkload(TrainerWorkloadRequestDto trainerWorkloadRequestDto, boolean isSavingAction) {
-        Map<String, Long> months = new HashMap<>();
+    private TrainerWorkload buildNewTrainerWorkload(TrainerWorkloadRequestDto requestDto, boolean isSavingAction) {
         List<Year> years = new ArrayList<>();
         if (isSavingAction) {
-            months.put(trainerWorkloadRequestDto.trainingDate().getMonth().name(), trainerWorkloadRequestDto.trainingDuration());
-            years.add(Year.builder()
-                .yearNumber(trainerWorkloadRequestDto.trainingDate().getYear())
-                .summaryDurationByMonths(months)
-                .build());
+            List<Month> months = new ArrayList<>();
+            months.add(new Month(requestDto.trainingDate().getMonth().name(), requestDto.trainingDuration()));
+            years.add(new Year(requestDto.trainingDate().getYear(), months));
         }
         return TrainerWorkload.builder()
-            .username(trainerWorkloadRequestDto.username())
-            .firstname(trainerWorkloadRequestDto.firstname())
-            .lastname(trainerWorkloadRequestDto.lastname())
-            .isActive(trainerWorkloadRequestDto.isActive())
+            .username(requestDto.username())
+            .firstname(requestDto.firstname())
+            .lastname(requestDto.lastname())
+            .isActive(requestDto.isActive())
             .years(years)
             .build();
     }
@@ -134,6 +135,6 @@ public class TrainerWorkloadServiceMongoImpl implements TrainerWorkloadService {
     @Override
     public TrainerWorkloadResponseDto getTrainerWorkload(String trainerUsername) {
         log.info("Find trainer workload by trainer username");
-        return trainerWorkloadMapper.toDto(mongoTemplate.findById(trainerUsername, TrainerWorkload.class));
+        return trainerWorkloadMapper.toDto(trainerWorkloadRepository.getByUsername(trainerUsername).orElse(null));
     }
 }
