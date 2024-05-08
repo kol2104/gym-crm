@@ -1,0 +1,58 @@
+server:
+    port: 8080
+
+spring:
+    datasource:
+        url: ${DB_URL:jdbc:mysql://localhost:3306/gym_crm_db}
+        username: ${DB_USERNAME:my_username}
+        password: ${DB_PASSWORD:my_password}
+    jpa:
+        show_sql: true
+    liquibase:
+        change-log: db/changelog/changelog.xml
+    cloud:
+        openfeign:
+            circuitbreaker:
+                enabled: true
+                alphanumeric-ids:
+                    enabled: true
+
+jwt:
+    key: secret_key
+    exp: 3600
+
+cors:
+    urls: http://localhost:8081
+
+management:
+    metrics:
+        export:
+        prometheus:
+            enabled: true
+    endpoints:
+        web:
+        exposure:
+            include: health,info,metrics,prometheus
+    endpoint:
+        health:
+        show-details: always
+        probes:
+            enabled: true
+        prometheus:
+            enabled: true
+
+eureka:
+    client:
+        register-with-eureka: true
+        service-url:
+            defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+resilience4j:
+    circuitbreaker:
+        instances:
+            TrainingsReportServiceupdateTrainerWorkload:
+                minimumNumberOfCalls: 10
+    timelimiter:
+        instances:
+            TrainingsReportServiceupdateTrainerWorkload:
+                timeoutDuration: 10s

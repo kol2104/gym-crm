@@ -29,18 +29,20 @@ The Gym CRM (Customer Relationship Management) project is designed to facilitate
     mvn clean package
 
 
-5. Run service
+5. Run services
 
 
-    java -jar target/gym-crm-0.0.1-SNAPSHOT.jar
+    java -jar gym-service/target/gym-service-0.0.1-SNAPSHOT.jar
+    java -jar trainings-report-service/target/trainings-report-service-0.0.1-SNAPSHOT.jar
+    java -jar eureka-server/target/eureka-server-0.0.1-SNAPSHOT.jar
 
 By default, application runs with `dev` profile.
-To use another profile you can use `java -jar target/gym-crm-0.0.1-SNAPSHOT.jar --spring.profiles.active=<PROFILE>` command.
+To use another profile you can use `java -jar target/gym-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=<PROFILE>` command.
 Replace `<PROFILE>` with possible profile (`dev`, `prod`, `stg`, `local`, `test`).
 
 Service launched!
 
-Service launched on 8080 port.
+Service launched on 8080 port, Eureka launched on 8761 port, trainings-report-service launched on 8082 port.
 
 ### Next steps
 
@@ -54,6 +56,9 @@ documentation on `/swagger-ui.html` endpoint or if you prefer JSON format use `/
 
 To check health indicators of application use `/actuator/health` endpoint.
 Also, you can check metrics of application on `/actuator/prometheus` endpoint or in Prometheus server (`localhost:9090`).
+
+For access to trainings-report-service use`/api/trainer-workload` endpoint.
+See `/swagger-ui.html` endpoint for information.
 
 ### Database migrations
 
