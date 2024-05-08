@@ -20,7 +20,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TrainerWorkloadServiceMongoImpl implements TrainerWorkloadService {
+public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
 
     private final TrainerWorkloadMapper trainerWorkloadMapper;
     private final TrainerWorkloadRepository trainerWorkloadRepository;

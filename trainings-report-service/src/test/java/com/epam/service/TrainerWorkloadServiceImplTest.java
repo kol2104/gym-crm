@@ -5,7 +5,7 @@ import com.epam.dto.TrainerWorkloadResponseDto;
 import com.epam.mapper.TrainerWorkloadMapper;
 import com.epam.model.TrainerWorkload;
 import com.epam.repository.TrainerWorkloadRepository;
-import com.epam.service.impl.TrainerWorkloadServiceMongoImpl;
+import com.epam.service.impl.TrainerWorkloadServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TrainerWorkloadServiceMongoImplTest {
+class TrainerWorkloadServiceImplTest {
 
     @Mock
     private TrainerWorkloadRepository trainerWorkloadRepository;
@@ -32,7 +32,7 @@ class TrainerWorkloadServiceMongoImplTest {
     private TrainerWorkloadMapper trainerWorkloadMapper;
 
     @InjectMocks
-    private TrainerWorkloadServiceMongoImpl service;
+    private TrainerWorkloadServiceImpl service;
 
     @Test
     void testUpdateTrainerWorkload_NewTrainer() {
