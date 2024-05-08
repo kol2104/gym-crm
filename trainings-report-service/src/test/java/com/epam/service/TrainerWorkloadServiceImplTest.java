@@ -4,45 +4,45 @@ import com.epam.dto.TrainerWorkloadRequestDto;
 import com.epam.dto.TrainerWorkloadResponseDto;
 import com.epam.mapper.TrainerWorkloadMapper;
 import com.epam.model.TrainerWorkload;
-import com.epam.service.impl.TrainerWorkloadServiceMongoImpl;
+import com.epam.repository.TrainerWorkloadRepository;
+import com.epam.service.impl.TrainerWorkloadServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TrainerWorkloadServiceMongoImplTest {
+class TrainerWorkloadServiceImplTest {
 
     @Mock
-    private MongoTemplate mongoTemplate;
+    private TrainerWorkloadRepository trainerWorkloadRepository;
 
     @Mock
     private TrainerWorkloadMapper trainerWorkloadMapper;
 
     @InjectMocks
-    private TrainerWorkloadServiceMongoImpl service;
+    private TrainerWorkloadServiceImpl service;
 
     @Test
     void testUpdateTrainerWorkload_NewTrainer() {
         TrainerWorkloadRequestDto dto = new TrainerWorkloadRequestDto(
             "username", "John", "Doe", true, LocalDateTime.now(), 60L, true);
-        when(mongoTemplate.findById(anyString(), eq(TrainerWorkload.class))).thenReturn(null);
+        when(trainerWorkloadRepository.getByUsername(anyString())).thenReturn(Optional.empty());
 
         service.updateTrainerWorkload(dto);
 
-        verify(mongoTemplate).save(any(TrainerWorkload.class));
+        verify(trainerWorkloadRepository).persistTrainerWorkload(any(TrainerWorkload.class));
     }
 
     @Test
@@ -56,11 +56,11 @@ class TrainerWorkloadServiceMongoImplTest {
             .build();
         TrainerWorkloadRequestDto dto = new TrainerWorkloadRequestDto(
             "username", "John", "Doe", true, LocalDateTime.now(), 60L, true);
-        when(mongoTemplate.findById(anyString(), eq(TrainerWorkload.class))).thenReturn(workload);
+        when(trainerWorkloadRepository.getByUsername(anyString())).thenReturn(Optional.of(workload));
 
         service.updateTrainerWorkload(dto);
 
-        verify(mongoTemplate).save(workload);
+        verify(trainerWorkloadRepository).persistTrainerWorkload(workload);
     }
 
     @Test
@@ -74,7 +74,7 @@ class TrainerWorkloadServiceMongoImplTest {
             .years(new ArrayList<>())
             .build();
         TrainerWorkloadResponseDto responseDto = new TrainerWorkloadResponseDto(username, "John", "Doe", true, new ArrayList<>());
-        when(mongoTemplate.findById(username, TrainerWorkload.class)).thenReturn(workload);
+        when(trainerWorkloadRepository.getByUsername(username)).thenReturn(Optional.of(workload));
         when(trainerWorkloadMapper.toDto(workload)).thenReturn(responseDto);
 
         TrainerWorkloadResponseDto result = service.getTrainerWorkload(username);

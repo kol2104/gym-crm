@@ -1,7 +1,7 @@
 package com.epam.mapper;
 
-import com.epam.dto.YearDto;
-import com.epam.model.Year;
+import com.epam.dto.MonthDto;
+import com.epam.model.Month;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -9,9 +9,8 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(
     componentModel = "spring",
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
-    unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    uses = MonthMapper.class
+    unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-public interface YearMapper {
-    YearDto toDto(Year year);
+public interface MonthMapper {
+    MonthDto toDto(Month month);
 }
