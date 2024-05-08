@@ -7,6 +7,13 @@ spring:
         show_sql: true
     liquibase:
         change-log: db/changelog/changelog.xml
+    activemq:
+        broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
+        in-memory: true
+        topic-name: trainer.workload
+        jms:
+            pool:
+                enabled: false
 
 jwt:
     key: secret_key
@@ -31,3 +38,7 @@ management:
             enabled: true
         prometheus:
             enabled: true
+
+topic:
+    trainer-workload:
+        name: trainer.workload.queue

@@ -16,6 +16,5 @@
     <modules>
         <module>gym-service</module>
         <module>trainings-report-service</module>
-        <module>eureka-server</module>
     </modules>
 </project>

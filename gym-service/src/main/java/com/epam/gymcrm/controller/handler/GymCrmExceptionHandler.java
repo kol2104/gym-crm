@@ -13,6 +13,7 @@ import com.epam.gymcrm.exception.model.ExceptionResponse;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.JmsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -39,7 +40,7 @@ public class GymCrmExceptionHandler {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, JsonMappingException.class,
-            TooManyLoginAttemptsException.class, TrainingDateConstraintViolation.class})
+            TooManyLoginAttemptsException.class, TrainingDateConstraintViolation.class, JmsException.class})
     public ResponseEntity<ExceptionResponse> exceptionHandlerBadRequest(Exception exception) {
         ExceptionResponse response = buildExceptionResponse(exception, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

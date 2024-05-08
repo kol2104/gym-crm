@@ -34,7 +34,6 @@ The Gym CRM (Customer Relationship Management) project is designed to facilitate
 
     java -jar gym-service/target/gym-service-0.0.1-SNAPSHOT.jar
     java -jar trainings-report-service/target/trainings-report-service-0.0.1-SNAPSHOT.jar
-    java -jar eureka-server/target/eureka-server-0.0.1-SNAPSHOT.jar
 
 By default, application runs with `dev` profile.
 To use another profile you can use `java -jar target/gym-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=<PROFILE>` command.
@@ -42,7 +41,7 @@ Replace `<PROFILE>` with possible profile (`dev`, `prod`, `stg`, `local`, `test`
 
 Service launched!
 
-Service launched on 8080 port, Eureka launched on 8761 port, trainings-report-service launched on 8082 port.
+Service launched on 8080 port, trainings-report-service launched on 8082 port.
 
 ### Next steps
 
