@@ -27,6 +27,10 @@
         <eureka.version>4.1.1</eureka.version>
         <feign.version>4.1.0</feign.version>
         <circuitbreaker.version>3.1.1</circuitbreaker.version>
+        <cucumber.version>7.17.0</cucumber.version>
+        <junit5.version>5.10.2</junit5.version>
+        <junit5-platform.version>1.10.2</junit5-platform.version>
+        <activemq-embed-broker.version>6.1.2</activemq-embed-broker.version>
 	</properties>
 	<dependencies>
 		<!-- Spring boot starters -->
@@ -99,6 +103,18 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
 		<!-- Mapstruct -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -121,6 +137,42 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq-embed-broker.version}</version>
+        </dependency>
+        <!-- Cucumber -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <!-- JUnit platform -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit5-platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${junit5-platform.version}</version>
+            <scope>test</scope>
         </dependency>
 	</dependencies>
 
@@ -157,6 +209,23 @@
 							<version>${mapstruct.version}</version>
 						</path>
 					</annotationProcessorPaths>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <properties>
+                        <configurationParameters>
+                            cucumber.junit-platform.naming-strategy=long
+                        </configurationParameters>
+                    </properties>
+                    <includes>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/*Runner.java</include>
+                    </includes>
                 </configuration>
             </plugin>
 		</plugins>
