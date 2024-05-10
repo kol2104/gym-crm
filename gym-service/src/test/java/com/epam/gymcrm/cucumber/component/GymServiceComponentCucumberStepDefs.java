@@ -45,7 +45,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @CucumberContextConfiguration
 @AutoConfigureMockMvc
 @SpringBootTest(classes = GymCrmApplication.class)
-//@EnableAutoConfiguration(exclude= {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 @ActiveProfiles("test")
 public class GymServiceComponentCucumberStepDefs {
 
