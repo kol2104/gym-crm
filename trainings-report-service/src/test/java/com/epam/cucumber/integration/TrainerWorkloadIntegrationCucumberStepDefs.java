@@ -108,7 +108,6 @@ public class TrainerWorkloadIntegrationCucumberStepDefs {
             LocalDateTime.of(2024, java.time.Month.JANUARY, 1, 1, 0, 0),
             120L, true
         );
-        //connectionFactory = new ActiveMQConnectionFactory("vm://embedded?broker.persistent=false,useShutdownHook=false");
         jmsTemplateTopic(objectMapper);
         jmsTemplate.convertAndSend(topic, trainerWorkloadRequestDto);
     }
@@ -132,7 +131,6 @@ public class TrainerWorkloadIntegrationCucumberStepDefs {
     }
 
     private void jmsTemplateTopic(ObjectMapper objectMapper) {
-        System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------\n\n\n\n\n\n\n\n\n\\n\n\n\n\\n\n\n\\n\n\n\\n\n\n\n\\n\n\\n\n\n\n\\n\n\n\n\n\n\\\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\\n\n\n\n\n\n\\n\n\n\n\n\\n\n\n\n\n\n\n-----------------------------------------------------------------");
         JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setPubSubDomain(true);
         jmsTemplate.setMessageConverter(messageConverter(objectMapper));
