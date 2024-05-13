@@ -59,6 +59,24 @@ Also, you can check metrics of application on `/actuator/prometheus` endpoint or
 For access to trainings-report-service use`/api/trainer-workload` endpoint.
 See `/swagger-ui.html` endpoint for information.
 
+### Testing
+
+Service uses Cucumber for component and integration tests.
+By default, all cucumber tests runs.
+You can run tests with specific tags to reduce testing time.
+
+For example, to run only unit and integration tests you can run
+
+    mvn test "-Dcucumber.filter.tags=@integration"
+
+Replace `integration` with tag or tags what you want to use.
+Possible tags:
+
+    @component - component tests
+    @integration - integration
+    @database - database integration tests
+    @jms - jms integration tests
+
 ### Database migrations
 
 Application uses Liquibase database migrations.
