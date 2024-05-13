@@ -1,5 +1,5 @@
 server:
-    port: 8080
+    port: ${GYM_SERVICE_PORT:8080}
 
 spring:
     datasource:
