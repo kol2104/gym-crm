@@ -1,7 +1,7 @@
 FROM maven:3.9 AS build
 COPY . /app
 WORKDIR /app
-RUN mvn clean package -Dskip.tests=true
+RUN mvn clean package
 
 FROM openjdk:17-jdk
 ENV SPRING_PROFILES_ACTIVE=prod
