@@ -12,6 +12,8 @@ services:
             MYSQL_PASSWORD: my_password
         volumes:
             - mysql_data:/var/lib/mysql
+        networks:
+            - backend
 
     prometheus:
         image: prom/prometheus:latest
@@ -21,6 +23,8 @@ services:
             - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
         command:
             - '--config.file=/etc/prometheus/prometheus.yml'
+        networks:
+            - backend
 
     activemq:
         image: apache/activemq-artemis:latest
@@ -34,8 +38,43 @@ services:
         volumes:
             - artemis-data:/var/lib/artemis/data
             - artemis-etc:/var/lib/artemis/etc
+        networks:
+            - backend
+
+    gym-service:
+        container_name: gym-service
+        build:
+            context: ./gym-service
+            dockerfile: Dockerfile
+            args:
+                GYM_SERVICE_PORT: ${GYM_SERVICE_PORT:-8080}
+        ports:
+            - ${GYM_SERVICE_PORT:-8080}:${GYM_SERVICE_PORT:-8080}
+        env_file:
+            - .env
+        networks:
+            - backend
+        depends_on:
+            - mysql
+
+    trainings-report-service:
+        container_name: trainings-report-service
+        build:
+            context: ./trainings-report-service
+            dockerfile: Dockerfile
+            args:
+                TRAININGS_REPORT_SERVICE_PORT: ${TRAININGS_REPORT_SERVICE_PORT:-8082}
+        ports:
+            - ${TRAININGS_REPORT_SERVICE_PORT:-8082}:${TRAININGS_REPORT_SERVICE_PORT:-8082}
+        env_file:
+            - .env
+        networks:
+            - backend
 
 volumes:
     mysql_data:
     artemis-data:
     artemis-etc:
+
+networks:
+    backend:
